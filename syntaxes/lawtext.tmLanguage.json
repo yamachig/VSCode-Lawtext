@@ -1,0 +1,134 @@
+{
+  "comment": "Syntax highlighting for Lawtext: https:\/\/github.com\/yamachig\/lawtext",
+  "fileTypes": [
+    "law.txt"
+  ],
+  "name":"Lawtext",
+  "patterns": [
+    {
+      "name": "entity.name.type.article-caption.lawtext",
+      "match": "^\\s+[(（].*[)）]\\s*$"
+    },
+    {
+      "name": "meta.table-item.lawtext",
+      "match": "^\\s*((?:\\* )?)(- )(.+?)\\s*$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.table-row-control.lawtext"
+        },
+        "2": {
+          "name": "keyword.control.table-column-control.lawtext"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#text-content"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "meta.figure.lawtext",
+      "match": "^\\s*(..\\s+figure\\s*::)\\s(.+?)\\s*$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.figure-control.lawtext"
+        },
+        "2": {
+          "name": "string.unquoted.figure-src.lawtext"
+        }
+      }
+    },
+    {
+      "contentName": "variable.toc-content.lawtext",
+      "begin": "^\\S*目次\\S*$",
+      "end": "^$",
+      "beginCaptures": {
+        "0": {
+          "name": "markup.bold.toc-title.lawtext"
+        }
+      }
+    },
+    {
+      "name": "meta.suppl-provision-line.lawtext",
+      "match": "^\\s*([附付]\\s*則\\s*\\S*\\s*抄?)\\s*$",
+      "captures": {
+        "1": {
+          "name": "markup.bold.suppl-provision-structure.lawtext"
+        }
+      }
+    },
+    {
+      "name": "meta.appdx-table-line.lawtext",
+      "match": "^\\s*(別表\\S*\\s*\\S*)\\s*$",
+      "captures": {
+        "1": {
+          "name": "markup.bold.appdx-table-structure.lawtext"
+        }
+      }
+    },
+    {
+      "name": "meta.appdx-style-line.lawtext",
+      "match": "^\\s*(様式\\S*\\s*\\S*)\\s*$",
+      "captures": {
+        "1": {
+          "name": "markup.bold.appdx-style-structure.lawtext"
+        }
+      }
+    },
+    {
+      "name": "meta.article-group-line.lawtext",
+      "match": "^\\s*(\\S*[編章節款目]\\S*)\\s+(.+?)\\s*$",
+      "captures": {
+        "1": {
+          "name": "markup.bold.article-group-structure.lawtext"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#text-content"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "meta.paragraph-line.lawtext",
+      "match": "^\\s*([^\\s編章節款目則]+)\\s+(.+?)\\s*$",
+      "captures": {
+        "1": {
+          "name": "markup.heading.paragraph-title.lawtext"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#text-content"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "include": "#text-content"
+    }
+  ],
+  "repository": {
+    "text-content": {
+      "patterns": [
+        {
+          "name": "string.interpolated.ruby.lawtext",
+          "begin": "<Ruby>",
+          "end": "</Ruby>"
+        },
+        {
+          "contentName": "string.quoted.other.quote.lawtext",
+          "begin": "「",
+          "end": "」"
+        }
+      ]
+    }
+  },
+  "scopeName": "text.lawtext",
+  "uuid": "e555770c-1d61-4fd2-bc7b-dfd04ef511b2"
+}

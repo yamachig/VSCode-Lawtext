@@ -1,0 +1,26 @@
+{
+    "name": "lawtext",
+    "displayName": "Lawtext",
+    "description": "Lawtext support",
+    "version": "0.0.1",
+    "publisher": "yamachi",
+    "engines": {
+        "vscode": "^1.18.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "lawtext",
+            "aliases": ["Lawtext", "lawtext"],
+            "extensions": [".law.txt"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "lawtext",
+            "scopeName": "text.lawtext",
+            "path": "./syntaxes/lawtext.tmLanguage.json"
+        }]
+    }
+}
