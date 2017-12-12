@@ -101,7 +101,24 @@
           "name": "markup.heading.paragraph-title.lawtext"
         },
         "2": {
+          "name": "meta.paragraph-body.lawtext",
           "patterns": [
+            {
+              "name": "meta.paragraph-columns.lawtext",
+              "match": "(\\S+?)\\s+(.+?)",
+              "captures": {
+                "1": {
+                  "name": "entity.name.function.column.lawtext"
+                },
+                "2": {
+                  "patterns": [
+                    {
+                      "include": "#text-content"
+                    }
+                  ]
+                }
+              }
+            },
             {
               "include": "#text-content"
             }
