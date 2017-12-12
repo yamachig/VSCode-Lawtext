@@ -22,7 +22,8 @@
         "3": {
           "patterns": [
             {
-              "include": "#text-content"
+              "name": "meta.table-column.lawtext",
+              "include": "#table-column-content"
             }
           ]
         }
@@ -142,6 +143,40 @@
           "contentName": "string.quoted.other.quote.lawtext",
           "begin": "「",
           "end": "」"
+        }
+      ]
+    },
+    "table-column-content": {
+      "patterns": [
+        {
+          "match": "(\\[)(\\S+)(=)([\"']\\S+[\"'])(\\])\\s*(\\S+)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.table-column-argument.lawtext"
+            },
+            "2": {
+              "name": "variable.parameter.table-column-argument.lawtext"
+            },
+            "3": {
+              "name": "keyword.operator.table-column-argument.lawtext"
+            },
+            "4": {
+              "name": "string.quoted.other.table-column-argument.lawtext"
+            },
+            "5": {
+              "name": "keyword.control.table-column-argument.lawtext"
+            },
+            "6": {
+              "patterns": [
+                {
+                  "include": "#table-column-content"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "include": "#text-content"
         }
       ]
     }
