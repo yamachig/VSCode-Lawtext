@@ -1,7 +1,7 @@
 {
     "name": "lawtext",
     "displayName": "Lawtext",
-    "description": "Lawtext support",
+    "description": "Lawtext syntax highlight and preview",
     "version": "0.0.1",
     "publisher": "yamachi",
     "engines": {
@@ -10,17 +10,79 @@
     "categories": [
         "Languages"
     ],
+    "activationEvents": [
+        "onCommand:extension.showLawtextPreview",
+        "onLanguage:lawtext"
+    ],
+    "main": "./out/extension",
     "contributes": {
-        "languages": [{
-            "id": "lawtext",
-            "aliases": ["Lawtext", "lawtext"],
-            "extensions": [".law.txt"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "lawtext",
-            "scopeName": "text.lawtext",
-            "path": "./syntaxes/lawtext.tmLanguage.json"
-        }]
+        "languages": [
+            {
+                "id": "lawtext",
+                "aliases": [
+                    "Lawtext",
+                    "lawtext",
+                    "law.txt"
+                ],
+                "extensions": [
+                    ".law.txt"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "lawtext",
+                "scopeName": "text.lawtext",
+                "path": "./syntaxes/lawtext.tmLanguage.json"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "extension.showLawtextPreview",
+                "key": "shift+ctrl+l",
+                "mac": "shift+cmd+l",
+                "when": "editorTextFocus"
+            }
+        ],
+        "commands": [
+            {
+                "command": "extension.showLawtextPreview",
+                "title": "Show Lawtext Preview",
+                "category": "Lawtext"
+            }
+        ],
+        "configurationDefaults": {
+            "[lawtext]": {
+                "editor.tabSize": 2,
+                "editor.insertSpaces": true,
+                "editor.wrappingIndent": "indent"
+            }
+        },
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "extension.showLawtextPreview",
+                    "when": "resourceLangId == lawtext"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.44",
+        "@types/node": "^7.0.49",
+        "@types/nunjucks": "^3.0.0",
+        "nunjucks": "^3.0.1",
+        "typescript": "^2.6.2",
+        "vscode": "^1.1.10"
+    },
+    "dependencies": {
+        "tslint": "^5.8.0"
     }
 }
