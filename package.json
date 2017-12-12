@@ -7,6 +7,12 @@
     "engines": {
         "vscode": "^1.18.0"
     },
+    "license": "SEE LICENSE IN LICENSE",
+    "homepage": "https://github.com/yamachig/vscode-lawtext/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yamachig/vscode-lawtext.git"
+    },
     "categories": [
         "Languages"
     ],
