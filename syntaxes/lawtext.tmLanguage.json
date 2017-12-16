@@ -11,8 +11,8 @@
     },
     {
       "contentName": "meta.table-structure.lawtext",
-      "begin": "(?=^\\s*(?:\\* )?- .+?\\s*$)",
-      "end": "^$",
+      "begin": "(?=^(\\s*)(?:\\* )?- .+?\\s*$)",
+      "end": "^(?!\\1)",
       "patterns": [
         {
           "name": "meta.table-item.lawtext",
