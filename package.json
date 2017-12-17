@@ -62,7 +62,8 @@
             "[lawtext]": {
                 "editor.tabSize": 2,
                 "editor.insertSpaces": true,
-                "editor.wrappingIndent": "indent"
+                "editor.wrappingIndent": "indent",
+                "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?「」（）　、。・―"
             }
         },
         "menus": {
