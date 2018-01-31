@@ -2,7 +2,7 @@
     "name": "lawtext",
     "displayName": "Lawtext",
     "description": "Lawtext syntax highlight and preview",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "publisher": "yamachi",
     "engines": {
         "vscode": "^1.18.0"
