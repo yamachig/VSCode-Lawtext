@@ -13,8 +13,8 @@ Press Ctrl+Shift+L to open preview window.
 Screenshots
 ========================
 
-![screenshot1](https://github.com/yamachig/Lawtext/wiki/images/screenshot1.png)
+![screenshot1](https://github.com/yamachig/Lawtext/wiki/images/vscode-screenshot1.png)
 
-![screenshot2](https://github.com/yamachig/Lawtext/wiki/images/screenshot2.png)
+![screenshot2](https://github.com/yamachig/Lawtext/wiki/images/vscode-screenshot2.png)
 
-![screenshot3](https://github.com/yamachig/Lawtext/wiki/images/screenshot3.png)
+![screenshot3](https://github.com/yamachig/Lawtext/wiki/images/vscode-screenshot3.png)
