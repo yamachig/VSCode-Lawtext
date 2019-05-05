@@ -4,13 +4,23 @@
         "target": "es6",
         "outDir": "out",
         "lib": [
-            "es6"
+            "es2017",
+            "dom",
+            "es5",
+            "scripthost"
         ],
         "sourceMap": true,
-        "rootDir": "src"
+        "rootDir": "src",
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "strictNullChecks": true,
+        "declaration": true,
+        // "suppressImplicitAnyIndexErrors": true
     },
     "exclude": [
         "node_modules",
-        ".vscode-test"
+        ".vscode-test",
+        "out",
     ]
 }
