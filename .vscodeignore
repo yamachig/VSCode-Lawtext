@@ -1,4 +1,6 @@
 .vscode/**
-.vscode-test/**
+**/*.ts
+**/*.map
 .gitignore
-vsc-extension-quickstart.md
+**/tsconfig.json
+client/node_modules/**

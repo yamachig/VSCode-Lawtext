@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from "fs";
-import { parse } from "lawtext/dist/parser_wrapper";
-import * as renderer from "lawtext/dist/renderer";
+import { parse } from "lawtext/dist/src/parser/lawtext";
+import * as renderer from "lawtext/dist/src/renderer";
 
 
 const renderActiveEditor = () => {
@@ -11,7 +11,7 @@ const renderActiveEditor = () => {
         return "Active editor doesn't show a Lawtext document.";
     }
     const lawtext = editor.document.getText();
-    const law = parse(lawtext);
+    const {value:law} = parse(lawtext);
     const rendered = renderer.renderHtml(
         law,
         {

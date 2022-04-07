@@ -2,29 +2,32 @@
     "name": "lawtext",
     "version": "0.0.6",
     "description": "Lawtext syntax highlight and preview",
+    "displayName": "Lawtext",
+    "author": "yamachi",
+    "publisher": "yamachi",
     "homepage": "https://github.com/yamachig/vscode-lawtext/blob/master/README.md",
     "repository": {
         "type": "git",
         "url": "https://github.com/yamachig/vscode-lawtext.git"
     },
-    "license": "SEE LICENSE IN LICENSE",
-    "main": "./out/extension",
+    "license": "MIT",
+    "main": "./client/out/extension",
     "scripts": {
-        "compile": "tsc -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
         "vscode:prepublish": "npm run compile",
-        "watch": "tsc -watch -p ./"
+        "compile": "npx tsc -b",
+        "watch": "npx tsc -b -watch",
+        "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
     },
     "dependencies": {
-        "lawtext": "^0.0.3"
+        "lawtext": "^0.1.0"
     },
     "devDependencies": {
-        "@types/node": "^9.4.6",
-        "typescript": "^2.8.3",
+        "@types/node": "^17.0.23",
+        "typescript": "^4.6.3",
         "vscode": "^1.1.10"
     },
     "engines": {
-        "vscode": "^1.23.0"
+        "vscode": "^1.63.0"
     },
     "activationEvents": [
         "onCommand:extension.showLawtextPreview",
@@ -86,7 +89,5 @@
                 }
             ]
         }
-    },
-    "displayName": "Lawtext",
-    "publisher": "yamachi"
+    }
 }

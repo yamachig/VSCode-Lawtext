@@ -1,26 +1,47 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es6",
-        "outDir": "out",
-        "lib": [
-            "es2017",
-            "dom",
-            "es5",
-            "scripthost"
-        ],
+        "target": "es2020",
+		"outDir": "out",
+		"rootDir": "src",
+        "lib": ["es2020", "dom"],
         "sourceMap": true,
-        "rootDir": "src",
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "strictNullChecks": true,
         "declaration": true,
         // "suppressImplicitAnyIndexErrors": true
+        
+        "downlevelIteration": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+
+        "skipLibCheck": true,
+
+        "noErrorTruncation": true,
+
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitOverride": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strict": true,
+        "strictBindCallApply": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
     },
     "exclude": [
         "node_modules",
         ".vscode-test",
-        "out",
-    ]
+    ],
+	"references": [
+		{ "path": "./client" },
+		{ "path": "./server" }
+	]
 }
