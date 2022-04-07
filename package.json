@@ -23,6 +23,11 @@
     },
     "devDependencies": {
         "@types/node": "^17.0.23",
+        "@typescript-eslint/eslint-plugin": "^5.18.0",
+        "@typescript-eslint/parser": "^5.18.0",
+        "eslint": "^8.12.0",
+        "eslint-plugin-prefer-arrow": "^1.2.3",
+        "eslint-plugin-tsdoc": "^0.2.14",
         "typescript": "^4.6.3",
         "vscode": "^1.1.10"
     },
@@ -46,7 +51,8 @@
                     "law.txt"
                 ],
                 "extensions": [
-                    ".law.txt"
+                    ".law.txt",
+                    ".lawtext"
                 ],
                 "configuration": "./language-configuration.json"
             }
