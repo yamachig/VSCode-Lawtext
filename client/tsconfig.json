@@ -6,10 +6,41 @@
 		"outDir": "out",
 		"rootDir": "src",
         "composite": true,
-		"sourceMap": true
+        "sourceMap": true,
+        "declaration": true,
+        // "suppressImplicitAnyIndexErrors": true
+        
+        "downlevelIteration": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+
+        "skipLibCheck": true,
+
+        "noErrorTruncation": true,
+
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitOverride": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strict": true,
+        "strictBindCallApply": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
     },
 	"include": ["src"],
     "exclude": [
+        "out",
+        "out-browser",
         "node_modules",
         ".vscode-test",
     ]

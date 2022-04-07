@@ -11,25 +11,37 @@
         "url": "https://github.com/yamachig/vscode-lawtext.git"
     },
     "license": "MIT",
-    "main": "./client/out/extension",
+    "main": "./client/out/main.js",
+    "browser": "./client/out-browser/bundle.js",
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "npx tsc -b",
-        "watch": "npx tsc -b -watch",
-        "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
+        "vscode:prepublish": "npm run build",
+        "build": "npx tsc --build",
+        "build-browser:dev": "npx webpack --color --config ./webpack-configs/browser.ts",
+        "build-browser:prod": "npx webpack --color --mode production --devtool hidden-source-map --config ./webpack-configs/browser.ts",
+        "watch": "npx tsc --build --watch",
+        "watch-browser": "npx webpack --color --watch --config ./webpack-configs/browser.ts",
+        "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+        "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
         "lawtext": "^0.1.0"
     },
     "devDependencies": {
         "@types/node": "^17.0.23",
+        "@types/webpack": "^5.28.0",
         "@typescript-eslint/eslint-plugin": "^5.18.0",
         "@typescript-eslint/parser": "^5.18.0",
+        "@vscode/test-web": "^0.0.24",
         "eslint": "^8.12.0",
         "eslint-plugin-prefer-arrow": "^1.2.3",
         "eslint-plugin-tsdoc": "^0.2.14",
+        "path-browserify": "^1.0.1",
+        "ts-loader": "^9.2.8",
+        "ts-node": "^10.7.0",
         "typescript": "^4.6.3",
-        "vscode": "^1.1.10"
+        "vscode": "^0.9.9",
+        "webpack": "^5.72.0",
+        "webpack-cli": "^4.9.2"
     },
     "engines": {
         "vscode": "^1.63.0"

@@ -1,4 +1,5 @@
 out
+out-browser
 node_modules
 .vsix
 package-lock.json
@@ -7,3 +8,4 @@ package-lock.json
 .env
 temp_*
 *.tsbuildinfo
+.vscode-test-web
