@@ -19,7 +19,7 @@ import { parse } from "lawtext/dist/src/parser/lawtext";
 import { LineType } from "lawtext/dist/src/node/cst/line";
 import { VirtualOnlyLineType } from "lawtext/dist/src/parser/std/virtualLine";
 import { assertNever } from "lawtext/dist/src/util";
-import { isAppdxItemTitle, isArithFormulaNum, isArticleCaption, isArticleGroupTitle, isArticleRange, isArticleTitle, isControl, isNoteLikeStructTitle, isParagraphCaption, isParagraphItemTitle, isRelatedArticleNum, isRemarksLabel, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTableStructTitle, isTOCLabel, StdEL, __EL } from "lawtext/dist/src/law/std";
+import { isAppdxItemTitle, isArithFormulaNum, isArticleCaption, isArticleGroupTitle, isArticleRange, isArticleTitle, isControl, isFig, isNoteLikeStructTitle, isParagraphCaption, isParagraphItemTitle, isRelatedArticleNum, isRemarksLabel, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTableStructTitle, isTOCLabel, isTOCPreambleLabel, StdEL, __EL } from "lawtext/dist/src/law/std";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability = false;
@@ -194,35 +194,49 @@ function *buildSampleTokens(document: TextDocument) {
     const regexp = /\{(\S+?)\}/g;
     for (const m of text.matchAll(regexp)) {
         if (!m.index) continue;
-        const ids = m[1].split(",");
+        const ids = m[1].split(".");
         const position = document.positionAt(m.index);
         const tokenType = tokenTypes.findIndex(t => ids.indexOf(t) >= 0);
-        const tokenModifier = tokenModifiers.findIndex(t => ids.indexOf(t) >= 0);
+        const tokenModifier = ids.map(m => tokenModifiers.indexOf(m)).filter(m => m >= 0);
         yield [
             position.line,
             position.character,
             m[0].length,
             tokenType,
-            (tokenModifier >= 0) ? (1 << tokenModifier) : 0,
+            (
+                (tokenModifier.length >= 0)
+                    ? tokenModifier.reduce((agg, m) => agg + (1 << m), 0)
+                    : 0
+            ),
         ] as BuilderItem;
     }
 }
 
-function *rangesOfEL(el: StdEL | __EL | string): Iterable<[[number, number], string]> {
+const boldModifier = ["defaultLibrary", "declaration", "definition"];
+
+function *rangesOfEL(el: StdEL | __EL | string): Iterable<[[number, number], string, string[]]> {
     if (typeof el === "string") return;
+    let skipChildren = false;
     if (isControl(el)) {
         if (el.tag === "__PContent") {
             if (el.attr.type === "square") {
-                if (el.range) yield [el.range, "string"];
+                if (el.range) yield [el.range, "string", []];
             }
         }
-    } else if (isArticleGroupTitle(el) || isSupplProvisionLabel(el) || isArticleRange(el) || isTOCLabel(el)) {
-        if (el.range) yield [el.range, "namespace"];
+    } else if (isArticleGroupTitle(el) || isSupplProvisionLabel(el) || isArticleRange(el) || isTOCLabel(el) || isTOCPreambleLabel(el)) {
+        if (el.range) yield [el.range, "namespace", boldModifier];
+        skipChildren = true;
     } else if (isArticleTitle(el) || isArticleCaption(el) || isParagraphItemTitle(el) || isParagraphCaption(el) || isAppdxItemTitle(el) || isSupplProvisionAppdxItemTitle(el) || isRelatedArticleNum(el) || isRemarksLabel(el) || isNoteLikeStructTitle(el) || isTableStructTitle(el) || isArithFormulaNum(el)) {
-        if (el.range) yield [el.range, "enumMember"];
+        if (el.range) yield [el.range, "enumMember", boldModifier];
+        skipChildren = true;
+    } else if (isFig(el)) {
+        if (el.range) yield [el.range, "event", []];
+        skipChildren = true;
     }
-    for (const child of el.children) {
-        yield *rangesOfEL(child as StdEL | __EL | string);
+    if (!skipChildren) {
+        for (const child of el.children) {
+            yield *rangesOfEL(child as StdEL | __EL | string);
+        }
     }
 }
 
@@ -231,7 +245,7 @@ function *buildTokens(document: TextDocument) {
     const lawtext = document.getText();
     const { virtualLines, value: law } = parse(lawtext);
 
-    const ranges: [[number, number], string][] = [];
+    const ranges: [[number, number], string, string[]][] = [];
 
     ranges.push(...rangesOfEL(law));
 
@@ -250,7 +264,7 @@ function *buildTokens(document: TextDocument) {
             // }
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === VirtualOnlyLineType.TSP) {
             // {
@@ -259,7 +273,7 @@ function *buildTokens(document: TextDocument) {
             // }
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === LineType.ARG) {
             // {
@@ -268,7 +282,7 @@ function *buildTokens(document: TextDocument) {
             // }
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === LineType.SPR) {
             // {
@@ -277,7 +291,7 @@ function *buildTokens(document: TextDocument) {
             // }
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === LineType.ART) {
             // {
@@ -291,7 +305,7 @@ function *buildTokens(document: TextDocument) {
             // }
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === VirtualOnlyLineType.CAP) {
             // {
@@ -300,7 +314,7 @@ function *buildTokens(document: TextDocument) {
             // }
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === LineType.APP) {
             // {
@@ -309,7 +323,7 @@ function *buildTokens(document: TextDocument) {
             // }
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === LineType.SPA) {
             // {
@@ -318,42 +332,47 @@ function *buildTokens(document: TextDocument) {
             // }
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === LineType.TBL) {
             {
                 const range = vl.line.attrEntriesRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
             {
                 const range = vl.line.firstColumnIndicatorRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
             {
                 const range = vl.line.columnIndicatorRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
             {
                 const range = vl.line.multilineIndicatorRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         } else if (vl.type === LineType.OTH) {
             {
                 const range = vl.line.controlsRange;
-                if (range) ranges.push([range, "macro"]);
+                if (range) ranges.push([range, "keyword", []]);
             }
         }
         else { assertNever(vl.type); }
     }
 
-    for (const [[start, end], type] of ranges) {
+    for (const [[start, end], type, modifiers] of ranges) {
         const position = document.positionAt(start);
+        const tokenModifier = modifiers.map(m => tokenModifiers.indexOf(m)).filter(m => m >= 0);
         yield [
             position.line,
             position.character,
             end - start,
             tokenTypes.indexOf(type),
-            0,
+            (
+                (tokenModifier.length >= 0)
+                    ? tokenModifier.reduce((agg, m) => agg + (1 << m), 0)
+                    : 0
+            ),
         ] as BuilderItem;
     }
 }

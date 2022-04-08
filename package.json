@@ -90,6 +90,11 @@
                 "editor.insertSpaces": true,
                 "editor.wrappingIndent": "indent",
                 "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?「」（）　、。・―"
+            },
+            "editor.semanticTokenColorCustomizations": {
+                "rules": {
+                    "*.defaultLibrary.declaration.definition": {"bold": true}
+                }
             }
         },
         "menus": {
