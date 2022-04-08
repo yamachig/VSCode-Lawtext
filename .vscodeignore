@@ -4,3 +4,4 @@
 .gitignore
 **/tsconfig.json
 client/node_modules/**
+server/node_modules/**

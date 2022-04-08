@@ -9,3 +9,4 @@ package-lock.json
 temp_*
 *.tsbuildinfo
 .vscode-test-web
+test-data

@@ -29,10 +29,10 @@ export const activate = (context: vscode.ExtensionContext) => {
     };
 
     const clientOptions: LanguageClientOptions = {
-        documentSelector: [{ scheme: "file", language: "lawtext" }],
+        documentSelector: [{ language: "lawtext" }],
         synchronize: {
             fileEvents: vscode.workspace.createFileSystemWatcher("**/.clientrc")
-        }
+        },
     };
 
     client = new LanguageClient(

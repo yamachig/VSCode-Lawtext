@@ -69,13 +69,6 @@
                 "configuration": "./language-configuration.json"
             }
         ],
-        "grammars": [
-            {
-                "language": "lawtext",
-                "scopeName": "text.lawtext",
-                "path": "./syntaxes/lawtext.tmLanguage.json"
-            }
-        ],
         "keybindings": [
             {
                 "command": "extension.showLawtextPreview",
