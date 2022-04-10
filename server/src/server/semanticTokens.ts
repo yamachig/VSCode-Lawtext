@@ -6,7 +6,7 @@ import { parse } from "lawtext/dist/src/parser/lawtext";
 import { LineType } from "lawtext/dist/src/node/cst/line";
 import { VirtualOnlyLineType } from "lawtext/dist/src/parser/std/virtualLine";
 import { assertNever } from "lawtext/dist/src/util";
-import { isAppdxItemTitle, isArithFormulaNum, isArticleCaption, isArticleGroupTitle, isArticleTitle, isControl, isFig, isNoteLikeStructTitle, isParagraphCaption, isParagraphItemTitle, isRelatedArticleNum, isRemarksLabel, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTableStructTitle, isTOC, isTOCLabel, StdEL, __EL } from "lawtext/dist/src/law/std";
+import { isAppdxItemTitle, isArithFormulaNum, isArticleCaption, isArticleGroupTitle, isArticleTitle, isControl, isFig, isLawNum, isLawTitle, isNoteLikeStructTitle, isParagraphCaption, isParagraphItemTitle, isRelatedArticleNum, isRemarksLabel, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTableStructTitle, isTOC, isTOCLabel, StdEL, __EL } from "lawtext/dist/src/law/std";
 
 export const tokenTypes: string[] = [];
 export const tokenModifiers: string[] = [];
@@ -47,13 +47,13 @@ function *rangesOfEL(el: StdEL | __EL | string): Iterable<[[number, number], str
                 if (el.range) yield [el.range, "string", []];
             }
         }
-    } else if (isArticleGroupTitle(el) || isSupplProvisionLabel(el)) {
+    } else if (isArticleGroupTitle(el) || isSupplProvisionLabel(el) || isLawTitle(el) || isLawNum(el)) {
         if (el.range) yield [el.range, "namespace", boldModifier];
         skipChildren = true;
     } else if (isTOC(el)) {
         for (const child of el.children) {
             if (child.range) {
-                if (isTOCLabel(el)) yield [child.range, "namespace", boldModifier];
+                if (isTOCLabel(child)) yield [child.range, "namespace", boldModifier];
                 else yield [child.range, "namespace", []];
             }
         }
@@ -195,18 +195,37 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
     }
 
     for (const [[start, end], type, modifiers] of ranges) {
-        const position = document.positionAt(start);
         const tokenModifier = modifiers.map(m => tokenModifiers.indexOf(m)).filter(m => m >= 0);
-        yield [
-            position.line,
-            position.character,
-            end - start,
-            tokenTypes.indexOf(type),
-            (
-                (tokenModifier.length >= 0)
-                    ? tokenModifier.reduce((agg, m) => agg + (1 << m), 0)
-                    : 0
-            ),
-        ] as BuilderItem;
+        const startPosition = document.positionAt(start);
+        const endPosition = document.positionAt(end);
+        for (let line = startPosition.line; line <= endPosition.line; line++) {
+            const length = (
+                line === endPosition.line
+                    ? (
+                        endPosition.character - (
+                            line === startPosition.line
+                                ? startPosition.character
+                                : 0
+                        )
+                    )
+                    : document.offsetAt({ line: line + 1, character: 0 }) - document.offsetAt({ line: line, character: 0 })
+            );
+            if (length === 0) continue;
+            yield [
+                line,
+                (
+                    line === startPosition.line
+                        ? startPosition.character
+                        : 0
+                ),
+                length,
+                tokenTypes.indexOf(type),
+                (
+                    (tokenModifier.length >= 0)
+                        ? tokenModifier.reduce((agg, m) => agg + (1 << m), 0)
+                        : 0
+                ),
+            ] as BuilderItem;
+        }
     }
 }

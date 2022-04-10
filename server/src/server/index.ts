@@ -47,6 +47,7 @@ export const main = (connection: _Connection) => {
 
     connection.onInitialize((params: InitializeParams) => {
         const capabilities = params.capabilities;
+        // console.log(`Client capabilities: ${JSON.stringify(capabilities, null, 2)}`);
 
         hasConfigurationCapability = !!(
             capabilities.workspace && !!capabilities.workspace.configuration
@@ -182,10 +183,11 @@ tokenModifiers: ${JSON.stringify(Object.fromEntries(tokenModifiers.entries()))}
             ...buildTokens(document, parsed),
         ];
         builderItems.sort((a, b) => (a[0] - b[0]) || (a[1] - b[1]));
+        builder.previousResult(params.previousResultId);
         for (const item of builderItems) {
             builder.push(...item);
         }
-        return builder.buildEdits();
+        return builder.build();
     });
 
     connection.languages.semanticTokens.onRange((params) => {
