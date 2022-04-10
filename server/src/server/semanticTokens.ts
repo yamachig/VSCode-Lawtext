@@ -6,7 +6,7 @@ import { parse } from "lawtext/dist/src/parser/lawtext";
 import { LineType } from "lawtext/dist/src/node/cst/line";
 import { VirtualOnlyLineType } from "lawtext/dist/src/parser/std/virtualLine";
 import { assertNever } from "lawtext/dist/src/util";
-import { isAppdxItemTitle, isArithFormulaNum, isArticleCaption, isArticleGroupTitle, isArticleTitle, isControl, isFig, isLawNum, isLawTitle, isNoteLikeStructTitle, isParagraphCaption, isParagraphItemTitle, isRelatedArticleNum, isRemarksLabel, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTableStructTitle, isTOC, isTOCLabel, StdEL, __EL } from "lawtext/dist/src/law/std";
+import { isAppdxItemTitle, isArithFormulaNum, isArticleCaption, isArticleGroupTitle, isArticleTitle, isControl, isFig, isFigStructTitle, isLawNum, isLawTitle, isNoteLikeStructTitle, isParagraphCaption, isParagraphItemTitle, isRelatedArticleNum, isRemarksLabel, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTableStructTitle, isTOC, isTOCLabel, StdEL, __EL } from "lawtext/dist/src/law/std";
 
 export const tokenTypes: string[] = [];
 export const tokenModifiers: string[] = [];
@@ -58,7 +58,7 @@ function *rangesOfEL(el: StdEL | __EL | string): Iterable<[[number, number], str
             }
         }
         skipChildren = true;
-    } else if (isArticleTitle(el) || isArticleCaption(el) || isParagraphItemTitle(el) || isParagraphCaption(el) || isAppdxItemTitle(el) || isSupplProvisionAppdxItemTitle(el) || isRemarksLabel(el) || isNoteLikeStructTitle(el) || isTableStructTitle(el) || isArithFormulaNum(el)) {
+    } else if (isArticleTitle(el) || isArticleCaption(el) || isParagraphItemTitle(el) || isParagraphCaption(el) || isAppdxItemTitle(el) || isSupplProvisionAppdxItemTitle(el) || isRemarksLabel(el) || isNoteLikeStructTitle(el) || isTableStructTitle(el) || isFigStructTitle(el) || isArithFormulaNum(el)) {
         if (el.range) yield [el.range, "enumMember", boldModifier];
         skipChildren = true;
     } else if (isRelatedArticleNum(el)) {
