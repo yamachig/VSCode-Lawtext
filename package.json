@@ -89,7 +89,24 @@
                 "editor.tabSize": 2,
                 "editor.insertSpaces": true,
                 "editor.wrappingIndent": "indent",
-                "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?「」（）　、。・―"
+                "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?「」（）　、。・―",
+                "editor.unicodeHighlight.allowedCharacters": {
+                    "　": true,
+                    "０": true,
+                    "１": true,
+                    "２": true,
+                    "３": true,
+                    "４": true,
+                    "５": true,
+                    "６": true,
+                    "７": true,
+                    "８": true,
+                    "９": true,
+                    "．": true
+                },
+                "editor.unicodeHighlight.allowedLocales": {
+                    "ja": true
+                }
             },
             "editor.semanticTokenColorCustomizations": {
                 "rules": {
