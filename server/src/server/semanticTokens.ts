@@ -98,7 +98,7 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             // }
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         } else if (vl.type === VirtualOnlyLineType.TSP) {
             // {
@@ -107,7 +107,7 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             // }
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         } else if (vl.type === LineType.ARG) {
             // {
@@ -116,7 +116,7 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             // }
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         } else if (vl.type === LineType.SPR) {
             // {
@@ -125,7 +125,7 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             // }
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         } else if (vl.type === LineType.ART) {
             // {
@@ -139,7 +139,7 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             // }
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         } else if (vl.type === VirtualOnlyLineType.CAP) {
             // {
@@ -148,7 +148,7 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             // }
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         } else if (vl.type === LineType.APP) {
             // {
@@ -157,7 +157,7 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             // }
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         } else if (vl.type === LineType.SPA) {
             // {
@@ -166,7 +166,7 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             // }
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         } else if (vl.type === LineType.TBL) {
             for (const attrEntry of vl.line.attrEntries) {
@@ -175,20 +175,20 @@ export function *buildTokens(document: TextDocument, parsed: ReturnType<typeof p
             }
             {
                 const range = vl.line.firstColumnIndicatorRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", boldModifier]);
             }
             {
                 const range = vl.line.columnIndicatorRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", boldModifier]);
             }
             {
                 const range = vl.line.multilineIndicatorRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", boldModifier]);
             }
         } else if (vl.type === LineType.OTH) {
             for (const control of vl.line.controls) {
                 const range = control.controlRange;
-                if (range) ranges.push([range, "keyword", []]);
+                if (range) ranges.push([range, "keyword", control.control.trim().length > 1 ? [] : boldModifier]);
             }
         }
         else { assertNever(vl.type); }
