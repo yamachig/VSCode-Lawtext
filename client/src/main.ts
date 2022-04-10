@@ -14,7 +14,7 @@ export const activate = (context: vscode.ExtensionContext) => {
     extension.activate(context);
 
     const serverModule = context.asAbsolutePath(
-        path.join("server", "out", "main.js")
+        path.join("server", "out", "bundle.js")
     );
 
     const debugOptions = { execArgv: ["--nolazy", "--inspect=6000"] };

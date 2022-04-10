@@ -11,20 +11,21 @@
         "url": "https://github.com/yamachig/vscode-lawtext.git"
     },
     "license": "MIT",
-    "main": "./client/out/main.js",
+    "main": "./client/out/bundle.js",
     "browser": "./client/out-browser/bundle.js",
     "scripts": {
-        "vscode:prepublish": "npm run build",
-        "build": "npx tsc --build",
+        "vscode:prepublish": "npm run build:prod && npm run build-browser:prod",
+        "build:dev": "npx webpack --color --config ./webpack-configs/main.ts",
+        "build:prod": "npx webpack --color --mode production --devtool hidden-source-map --config ./webpack-configs/main.ts",
         "build-browser:dev": "npx webpack --color --config ./webpack-configs/browser.ts",
         "build-browser:prod": "npx webpack --color --mode production --devtool hidden-source-map --config ./webpack-configs/browser.ts",
-        "watch": "npx tsc --build --watch",
+        "watch": "npx webpack --color --watch --config ./webpack-configs/main.ts",
         "watch-browser": "npx webpack --color --watch --config ./webpack-configs/browser.ts",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
-        "lawtext": "^0.1.1"
+        "lawtext": "^0.1.2"
     },
     "devDependencies": {
         "@types/node": "^17.0.23",
