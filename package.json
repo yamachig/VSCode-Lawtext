@@ -1,7 +1,7 @@
 {
     "name": "lawtext",
-    "version": "0.0.6",
-    "description": "Lawtext syntax highlight and preview",
+    "version": "0.0.7",
+    "description": "Lawtext language server and preview",
     "displayName": "Lawtext",
     "author": "yamachi",
     "publisher": "yamachi",
@@ -24,7 +24,7 @@
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
-        "lawtext": "^0.1.0"
+        "lawtext": "^0.1.1"
     },
     "devDependencies": {
         "@types/node": "^17.0.23",
