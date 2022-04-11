@@ -23,6 +23,7 @@ import { getSymbols } from "./symbols";
 import { Parsed } from "./common";
 import { getDefinitions } from "./definitions";
 import { getReferences } from "./references";
+import { getDocumentHighlights } from "./documentHighlights";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedCache: Map<string, Parsed> = new Map();
@@ -51,6 +52,7 @@ let hasHoverCapability = false;
 let hasDocumentSymbolCapability = false;
 let hasDefinitionCapability = false;
 let hasReferencesCapability = false;
+let hasDocumentHighlightCapability = false;
 
 interface ExampleSettings {
     maxNumberOfProblems: number;
@@ -87,6 +89,8 @@ export const main = (connection: _Connection) => {
 
         hasReferencesCapability = !!(capabilities.textDocument?.references);
 
+        hasDocumentHighlightCapability = !!(capabilities.textDocument?.documentHighlight);
+
         if (semanticTokensClientCapability) {
             tokenTypes.push(...semanticTokensClientCapability.tokenTypes);
             tokenModifiers.push(...semanticTokensClientCapability.tokenModifiers);
@@ -99,6 +103,7 @@ export const main = (connection: _Connection) => {
                 documentSymbolProvider: hasDocumentSymbolCapability,
                 definitionProvider: hasDefinitionCapability,
                 referencesProvider: hasReferencesCapability,
+                documentHighlightProvider: hasDocumentHighlightCapability,
             }
         };
         if (hasWorkspaceFolderCapability) {
@@ -204,6 +209,16 @@ tokenModifiers: ${JSON.stringify(Object.fromEntries(tokenModifiers.entries()))}
         }
         const parsed = getParsed(document);
         const definition = getReferences(document, parsed, e.position);
+        return definition;
+    });
+
+    connection.onDocumentHighlight(e => {
+        const document = documents.get(e.textDocument.uri);
+        if (document === undefined) {
+            return null;
+        }
+        const parsed = getParsed(document);
+        const definition = getDocumentHighlights(document, parsed, e.position);
         return definition;
     });
 
