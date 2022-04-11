@@ -107,7 +107,9 @@
                 },
                 "editor.unicodeHighlight.allowedLocales": {
                     "ja": true
-                }
+                },
+                "editor.bracketPairColorization.enabled": true,
+                "editor.definitionLinkOpensInPeek": true
             },
             "editor.semanticTokenColorCustomizations": {
                 "rules": {
@@ -116,7 +118,7 @@
                 "[Default Light+]": {
                     "rules": {
                         "variable":{
-                            "foreground": "#185cee"
+                            "foreground": "#0944c5"
                         }
                     }
                 }

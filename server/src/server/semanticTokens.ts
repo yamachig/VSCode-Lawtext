@@ -65,12 +65,12 @@ function *tokensOfEL(el: StdEL | __EL | string): Iterable<[[number, number], str
             }
         }
         skipChildren = true;
-    } else if (isArticleTitle(el) || isArticleCaption(el) || isParagraphItemTitle(el) || isParagraphCaption(el) || isAppdxItemTitle(el) || isSupplProvisionAppdxItemTitle(el) || isRemarksLabel(el) || isNoteLikeStructTitle(el) || isTableStructTitle(el) || isFigStructTitle(el) || isArithFormulaNum(el)) {
+    } else if (isArticleTitle(el) || isParagraphItemTitle(el) || isAppdxItemTitle(el) || isSupplProvisionAppdxItemTitle(el) || isRemarksLabel(el) || isNoteLikeStructTitle(el) || isTableStructTitle(el) || isFigStructTitle(el) || isArithFormulaNum(el)) {
         if (el.range) yield [el.range, "enumMember", boldModifier];
         skipChildren = true;
-    } else if (isRelatedArticleNum(el)) {
+    } else if (isRelatedArticleNum(el) || isArticleCaption(el) || isParagraphCaption(el)) {
         if (el.range) yield [el.range, "enumMember", []];
-        skipChildren = true;
+        // skipChildren = true;
     } else if (isFig(el)) {
         if (el.range) yield [el.range, "event", []];
         skipChildren = true;
@@ -199,6 +199,20 @@ export function *buildTokens(document: TextDocument, parsed: Parsed) {
             }
         }
         else { assertNever(vl.type); }
+    }
+
+    ranges.sort(([r1], [r2]) => (r1[0] - r2[0]) || (r1[1] - r2[1]));
+
+    for (let i = 0; i < ranges.length; i++) {
+        const [currentRange, ...currentRest] = ranges[i];
+        for (let j = i + 1; j < ranges.length; j++) {
+            const [nextRange] = ranges[j];
+            if (currentRange[1] <= nextRange[0]) break;
+            if (nextRange[1] < currentRange[1]) {
+                ranges.splice(j + 1, 0, [[nextRange[1], currentRange[1]], ...currentRest]);
+            }
+            currentRange[1] = nextRange[0];
+        }
     }
 
     for (const [[start, end], type, modifiers] of ranges) {
