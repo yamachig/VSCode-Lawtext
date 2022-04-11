@@ -1,6 +1,6 @@
 {
     "name": "lawtext",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "Lawtext language server and preview",
     "displayName": "Lawtext",
     "author": "yamachi",
@@ -25,7 +25,7 @@
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
-        "lawtext": "^0.1.2"
+        "lawtext": "^0.1.3"
     },
     "devDependencies": {
         "@types/node": "^17.0.23",
