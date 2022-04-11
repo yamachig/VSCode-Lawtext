@@ -8,13 +8,13 @@ import {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { parse } from "lawtext/dist/src/parser/lawtext";
 import { EL } from "lawtext/dist/src/node/el";
 import { isStdEL, StdEL } from "lawtext/dist/src/law/std";
+import { Parsed } from "./common";
 
-export const getHover = (document: TextDocument, parsed: ReturnType<typeof parse>, position: Position): Hover | null => {
+export const getHover = (document: TextDocument, parsed: Parsed, position: Position): Hover | null => {
     const offset = document.offsetAt(position);
-    const { value: law, virtualLines: vls } = parsed;
+    const { law, virtualLines: vls } = parsed;
     const mdLines: string[] = [];
 
     let range: Range | undefined = undefined;

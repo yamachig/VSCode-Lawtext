@@ -112,6 +112,13 @@
             "editor.semanticTokenColorCustomizations": {
                 "rules": {
                     "*.defaultLibrary.declaration.definition": {"bold": true}
+                },
+                "[Default Light+]": {
+                    "rules": {
+                        "variable":{
+                            "foreground": "#185cee"
+                        }
+                    }
                 }
             }
         },

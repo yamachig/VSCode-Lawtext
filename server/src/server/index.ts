@@ -17,15 +17,30 @@ import { BuilderItem, buildSampleTokens, buildTokens, tokenModifiers, tokenTypes
 import { getDiagnostics } from "./diagnostics";
 
 import { parse } from "lawtext/dist/src/parser/lawtext";
+import { analyze } from "lawtext/dist/src/analyzer";
 import { getHover } from "./hover";
 import { getSymbols } from "./symbols";
+import { Parsed } from "./common";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
-const parsedCache: Map<string, ReturnType<typeof parse>> = new Map();
-const getParsed = (textDocument: TextDocument): ReturnType<typeof parse> => {
-    const parsed = parsedCache.get(textDocument.uri) ?? parse(textDocument.getText());
+const parsedCache: Map<string, Parsed> = new Map();
+const getParsed = (textDocument: TextDocument): Parsed => {
+    const cached = parsedCache.get(textDocument.uri);
+    if (cached) return cached;
+
+    const { value: law, errors: parseErrors, virtualLines } = parse(textDocument.getText());
+    const { declarations, variableReferences } = analyze(law);
+
+    const parsed: Parsed = {
+        law,
+        parseErrors,
+        virtualLines,
+        declarations,
+        variableReferences,
+    };
     parsedCache.set(textDocument.uri, parsed);
     return parsed;
+
 };
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
@@ -132,8 +147,8 @@ tokenModifiers: ${JSON.stringify(Object.fromEntries(tokenModifiers.entries()))}
 
     documents.onDidChangeContent(change => {
         const document = change.document;
-        const parsed = parse(document.getText());
-        parsedCache.set(document.uri, parsed);
+        parsedCache.delete(document.uri);
+        const parsed = getParsed(document);
         const diagnostics = getDiagnostics(document, parsed);
         connection.sendDiagnostics({ uri: document.uri, diagnostics });
     });

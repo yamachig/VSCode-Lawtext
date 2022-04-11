@@ -7,11 +7,11 @@ import {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { parse } from "lawtext/dist/src/parser/lawtext";
+import { Parsed } from "./common";
 
 
-export const getDiagnostics = (textDocument: TextDocument, parsed: ReturnType<typeof parse>) => {
-    const { errors } = parsed;
+export const getDiagnostics = (textDocument: TextDocument, parsed: Parsed) => {
+    const { parseErrors: errors } = parsed;
 
     const diagnostics: Diagnostic[] = [];
     for (const error of errors) {

@@ -8,12 +8,12 @@ import {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { parse } from "lawtext/dist/src/parser/lawtext";
 import { EL } from "lawtext/dist/src/node/el";
 import { AppdxItemTitle, isAppdxItem, isAppdxItemTitle, isArticle, isArticleCaption, isArticleGroup, isArticleGroupTitle, isArticleTitle, isEnactStatement, isLaw, isLawBody, isLawNum, isLawTitle, isMainProvision, isParagraphCaption, isParagraphItem, isParagraphItemTitle, isPreamble, isSupplProvision, isSupplProvisionAppdxItem, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTOC, isTOCLabel, SupplProvisionAppdxItemTitle } from "lawtext/dist/src/law/std";
+import { Parsed } from "./common";
 
-export const getSymbols = (document: TextDocument, parsed: ReturnType<typeof parse>): DocumentSymbol[] => {
-    return [...symbolsOfEL(document, parsed.value)];
+export const getSymbols = (document: TextDocument, parsed: Parsed): DocumentSymbol[] => {
+    return [...symbolsOfEL(document, parsed.law)];
 };
 
 const toRange = <TRange extends [number, number] | null | undefined>(document: TextDocument, range: TRange): TRange extends (null | undefined) ? null : Range => (
