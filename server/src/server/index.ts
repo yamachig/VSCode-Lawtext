@@ -22,6 +22,7 @@ import { getHover } from "./hover";
 import { getSymbols } from "./symbols";
 import { Parsed } from "./common";
 import { getDefinitions } from "./definitions";
+import { getReferences } from "./references";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedCache: Map<string, Parsed> = new Map();
@@ -49,6 +50,7 @@ let hasSemanticTokensCapability = false;
 let hasHoverCapability = false;
 let hasDocumentSymbolCapability = false;
 let hasDefinitionCapability = false;
+let hasReferencesCapability = false;
 
 interface ExampleSettings {
     maxNumberOfProblems: number;
@@ -83,6 +85,8 @@ export const main = (connection: _Connection) => {
 
         hasDefinitionCapability = !!(capabilities.textDocument?.definition);
 
+        hasReferencesCapability = !!(capabilities.textDocument?.references);
+
         if (semanticTokensClientCapability) {
             tokenTypes.push(...semanticTokensClientCapability.tokenTypes);
             tokenModifiers.push(...semanticTokensClientCapability.tokenModifiers);
@@ -94,6 +98,7 @@ export const main = (connection: _Connection) => {
                 hoverProvider: hasHoverCapability,
                 documentSymbolProvider: hasDocumentSymbolCapability,
                 definitionProvider: hasDefinitionCapability,
+                referencesProvider: hasReferencesCapability,
             }
         };
         if (hasWorkspaceFolderCapability) {
@@ -189,6 +194,16 @@ tokenModifiers: ${JSON.stringify(Object.fromEntries(tokenModifiers.entries()))}
         }
         const parsed = getParsed(document);
         const definition = getDefinitions(document, parsed, e.position);
+        return definition;
+    });
+
+    connection.onReferences(e => {
+        const document = documents.get(e.textDocument.uri);
+        if (document === undefined) {
+            return null;
+        }
+        const parsed = getParsed(document);
+        const definition = getReferences(document, parsed, e.position);
         return definition;
     });
 
