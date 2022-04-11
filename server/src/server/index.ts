@@ -21,6 +21,7 @@ import { analyze } from "lawtext/dist/src/analyzer";
 import { getHover } from "./hover";
 import { getSymbols } from "./symbols";
 import { Parsed } from "./common";
+import { getDefinitions } from "./definitions";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedCache: Map<string, Parsed> = new Map();
@@ -47,6 +48,7 @@ let hasWorkspaceFolderCapability = false;
 let hasSemanticTokensCapability = false;
 let hasHoverCapability = false;
 let hasDocumentSymbolCapability = false;
+let hasDefinitionCapability = false;
 
 interface ExampleSettings {
     maxNumberOfProblems: number;
@@ -79,6 +81,8 @@ export const main = (connection: _Connection) => {
 
         hasDocumentSymbolCapability = !!(capabilities.textDocument?.documentSymbol);
 
+        hasDefinitionCapability = !!(capabilities.textDocument?.definition);
+
         if (semanticTokensClientCapability) {
             tokenTypes.push(...semanticTokensClientCapability.tokenTypes);
             tokenModifiers.push(...semanticTokensClientCapability.tokenModifiers);
@@ -89,6 +93,7 @@ export const main = (connection: _Connection) => {
                 textDocumentSync: TextDocumentSyncKind.Incremental,
                 hoverProvider: hasHoverCapability,
                 documentSymbolProvider: hasDocumentSymbolCapability,
+                definitionProvider: hasDefinitionCapability,
             }
         };
         if (hasWorkspaceFolderCapability) {
@@ -175,6 +180,16 @@ tokenModifiers: ${JSON.stringify(Object.fromEntries(tokenModifiers.entries()))}
         const parsed = getParsed(document);
         const symbols = getSymbols(document, parsed);
         return symbols;
+    });
+
+    connection.onDefinition(e => {
+        const document = documents.get(e.textDocument.uri);
+        if (document === undefined) {
+            return null;
+        }
+        const parsed = getParsed(document);
+        const definition = getDefinitions(document, parsed, e.position);
+        return definition;
     });
 
     connection.languages.semanticTokens.on((params) => {
