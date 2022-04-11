@@ -18,6 +18,7 @@ import { getDiagnostics } from "./diagnostics";
 
 import { parse } from "lawtext/dist/src/parser/lawtext";
 import { getHover } from "./hover";
+import { getSymbols } from "./symbols";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedCache: Map<string, ReturnType<typeof parse>> = new Map();
@@ -30,6 +31,7 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasSemanticTokensCapability = false;
 let hasHoverCapability = false;
+let hasDocumentSymbolCapability = false;
 
 interface ExampleSettings {
     maxNumberOfProblems: number;
@@ -60,6 +62,8 @@ export const main = (connection: _Connection) => {
 
         hasHoverCapability = !!(capabilities.textDocument?.hover);
 
+        hasDocumentSymbolCapability = !!(capabilities.textDocument?.documentSymbol);
+
         if (semanticTokensClientCapability) {
             tokenTypes.push(...semanticTokensClientCapability.tokenTypes);
             tokenModifiers.push(...semanticTokensClientCapability.tokenModifiers);
@@ -69,6 +73,7 @@ export const main = (connection: _Connection) => {
             capabilities: {
                 textDocumentSync: TextDocumentSyncKind.Incremental,
                 hoverProvider: hasHoverCapability,
+                documentSymbolProvider: hasDocumentSymbolCapability,
             }
         };
         if (hasWorkspaceFolderCapability) {
@@ -145,6 +150,16 @@ tokenModifiers: ${JSON.stringify(Object.fromEntries(tokenModifiers.entries()))}
         const parsed = getParsed(document);
         const hover = getHover(document, parsed, e.position);
         return hover;
+    });
+
+    connection.onDocumentSymbol(e => {
+        const document = documents.get(e.textDocument.uri);
+        if (document === undefined) {
+            return null;
+        }
+        const parsed = getParsed(document);
+        const symbols = getSymbols(document, parsed);
+        return symbols;
     });
 
     connection.languages.semanticTokens.on((params) => {
