@@ -37,7 +37,10 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
             },
         },
         module: {
-            rules: [{ test: /\.ts$/, loader: "ts-loader" }],
+            rules: [
+                { test: /\.ts$/, loader: "ts-loader" },
+                { test: /\.css$/, type: "asset/source" },
+            ],
         },
 
         plugins: [new WatchMessagePlugin()],

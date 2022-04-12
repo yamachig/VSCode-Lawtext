@@ -1,6 +1,5 @@
 import {
     DocumentSymbol,
-    Range,
     SymbolKind,
 } from "vscode-languageserver";
 
@@ -10,18 +9,11 @@ import {
 
 import { EL } from "lawtext/dist/src/node/el";
 import { AppdxItemTitle, isAppdxItem, isAppdxItemTitle, isArticle, isArticleCaption, isArticleGroup, isArticleGroupTitle, isArticleTitle, isEnactStatement, isLaw, isLawBody, isLawNum, isLawTitle, isMainProvision, isParagraphCaption, isParagraphItem, isParagraphItemTitle, isPreamble, isSupplProvision, isSupplProvisionAppdxItem, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTOC, isTOCLabel, SupplProvisionAppdxItemTitle } from "lawtext/dist/src/law/std";
-import { Parsed } from "./common";
+import { Parsed, toRange } from "./common";
 
 export const getSymbols = (document: TextDocument, parsed: Parsed): DocumentSymbol[] => {
     return [...symbolsOfEL(document, parsed.law)];
 };
-
-const toRange = <TRange extends [number, number] | null | undefined>(document: TextDocument, range: TRange): TRange extends (null | undefined) ? null : Range => (
-    (range && {
-        start: document.positionAt(range[0]),
-        end: document.positionAt(range[1]),
-    }) ?? null
-) as TRange extends (null | undefined) ? null : Range;
 
 function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined): Iterable<DocumentSymbol> {
     if (typeof el === "string" || !el) return;

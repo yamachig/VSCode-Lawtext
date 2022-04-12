@@ -5,8 +5,8 @@ import {
     TextDocumentSyncKind,
     InitializeResult,
     _Connection,
-    SemanticTokensRegistrationType,
     SemanticTokensBuilder,
+    ServerCapabilities,
 } from "vscode-languageserver";
 
 import {
@@ -24,6 +24,7 @@ import { Parsed } from "./common";
 import { getDefinitions } from "./definitions";
 import { getReferences } from "./references";
 import { getDocumentHighlights } from "./documentHighlights";
+import { getCodeLenses, getCodeLensResolve } from "./codeLenses";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedCache: Map<string, Parsed> = new Map();
@@ -53,6 +54,7 @@ let hasDocumentSymbolCapability = false;
 let hasDefinitionCapability = false;
 let hasReferencesCapability = false;
 let hasDocumentHighlightCapability = false;
+let hasCodeLensCapability = false;
 
 interface ExampleSettings {
     maxNumberOfProblems: number;
@@ -68,77 +70,90 @@ const getTokenBuilder = (textDocument: TextDocument): SemanticTokensBuilder => {
 
 export const main = (connection: _Connection) => {
 
-    connection.onInitialize((params: InitializeParams) => {
-        const capabilities = params.capabilities;
+    const onInitializedHandlers: (() => void)[] = [];
+
+    connection.onInitialize((params: InitializeParams): InitializeResult => {
+        const clientCapabilities = params.capabilities;
         // console.log(`Client capabilities: ${JSON.stringify(capabilities, null, 2)}`);
 
+        const serverCapabilities: ServerCapabilities = {
+            textDocumentSync: TextDocumentSyncKind.Incremental,
+        };
+
         hasConfigurationCapability = !!(
-            capabilities.workspace && !!capabilities.workspace.configuration
+            clientCapabilities.workspace && !!clientCapabilities.workspace.configuration
         );
-        hasWorkspaceFolderCapability = !!(
-            capabilities.workspace && !!capabilities.workspace.workspaceFolders
-        );
-        const semanticTokensClientCapability = capabilities.textDocument?.semanticTokens;
-        hasSemanticTokensCapability = !!semanticTokensClientCapability;
-
-        hasHoverCapability = !!(capabilities.textDocument?.hover);
-
-        hasDocumentSymbolCapability = !!(capabilities.textDocument?.documentSymbol);
-
-        hasDefinitionCapability = !!(capabilities.textDocument?.definition);
-
-        hasReferencesCapability = !!(capabilities.textDocument?.references);
-
-        hasDocumentHighlightCapability = !!(capabilities.textDocument?.documentHighlight);
-
-        if (semanticTokensClientCapability) {
-            tokenTypes.push(...semanticTokensClientCapability.tokenTypes);
-            tokenModifiers.push(...semanticTokensClientCapability.tokenModifiers);
+        if (hasConfigurationCapability) {
+            onInitializedHandlers.push(() => {
+                connection.client.register(DidChangeConfigurationNotification.type, undefined);
+            });
         }
 
-        const result: InitializeResult = {
-            capabilities: {
-                textDocumentSync: TextDocumentSyncKind.Incremental,
-                hoverProvider: hasHoverCapability,
-                documentSymbolProvider: hasDocumentSymbolCapability,
-                definitionProvider: hasDefinitionCapability,
-                referencesProvider: hasReferencesCapability,
-                documentHighlightProvider: hasDocumentHighlightCapability,
-            }
-        };
+        hasWorkspaceFolderCapability = !!(
+            clientCapabilities.workspace && !!clientCapabilities.workspace.workspaceFolders
+        );
         if (hasWorkspaceFolderCapability) {
-            result.capabilities.workspace = {
+            serverCapabilities.workspace = {
                 workspaceFolders: {
                     supported: true
                 }
             };
+            onInitializedHandlers.push(() => {
+                connection.workspace.onDidChangeWorkspaceFolders(() => {
+                    connection.console.log("Workspace folder change event received.");
+                });
+            });
         }
-        return result;
-    });
 
-    connection.onInitialized(() => {
-        if (hasConfigurationCapability) {
-            connection.client.register(DidChangeConfigurationNotification.type, undefined);
+        const semanticTokensClientCapability = clientCapabilities.textDocument?.semanticTokens;
+        if (semanticTokensClientCapability) {
+            tokenTypes.push(...semanticTokensClientCapability.tokenTypes);
+            tokenModifiers.push(...semanticTokensClientCapability.tokenModifiers);
         }
+        hasSemanticTokensCapability = !!semanticTokensClientCapability;
         if (hasSemanticTokensCapability) {
-            console.log(`registering semantic tokens:
-tokenTypes: ${JSON.stringify(Object.fromEntries(tokenTypes.entries()))}
-tokenModifiers: ${JSON.stringify(Object.fromEntries(tokenModifiers.entries()))}
-`);
-            connection.client.register(SemanticTokensRegistrationType.type, {
+            serverCapabilities.semanticTokensProvider = {
                 documentSelector: [{ language: "lawtext" }],
                 legend: { tokenTypes, tokenModifiers },
                 range: false,
                 full: {
                     delta: true
-                }
-            });
+                },
+            };
         }
-        if (hasWorkspaceFolderCapability) {
-            connection.workspace.onDidChangeWorkspaceFolders(() => {
-                connection.console.log("Workspace folder change event received.");
-            });
+
+        hasHoverCapability = !!(clientCapabilities.textDocument?.hover);
+        serverCapabilities.hoverProvider = hasHoverCapability;
+
+        hasDocumentSymbolCapability = !!(clientCapabilities.textDocument?.documentSymbol);
+        serverCapabilities.documentSymbolProvider = hasDocumentSymbolCapability;
+
+        hasDefinitionCapability = !!(clientCapabilities.textDocument?.definition);
+        serverCapabilities.definitionProvider = hasDefinitionCapability;
+
+        hasReferencesCapability = !!(clientCapabilities.textDocument?.references);
+        serverCapabilities.referencesProvider = hasReferencesCapability;
+
+        hasDocumentHighlightCapability = !!(clientCapabilities.textDocument?.documentHighlight);
+        serverCapabilities.documentHighlightProvider = hasDocumentHighlightCapability;
+
+        hasCodeLensCapability = !!(clientCapabilities.textDocument?.codeLens);
+        if (hasCodeLensCapability) {
+            serverCapabilities.codeLensProvider = {
+                resolveProvider: true,
+            };
         }
+
+        return {
+            capabilities: serverCapabilities,
+        };
+    });
+
+    connection.onInitialized(() => {
+        for (const handler of onInitializedHandlers) {
+            handler();
+        }
+        onInitializedHandlers.splice(0, onInitializedHandlers.length);
     });
 
     connection.onDidChangeConfiguration(() => {
@@ -220,6 +235,21 @@ tokenModifiers: ${JSON.stringify(Object.fromEntries(tokenModifiers.entries()))}
         const parsed = getParsed(document);
         const definition = getDocumentHighlights(document, parsed, e.position);
         return definition;
+    });
+
+    connection.onCodeLens(e => {
+        const document = documents.get(e.textDocument.uri);
+        if (document === undefined) {
+            return null;
+        }
+        const parsed = getParsed(document);
+        const codeLenses = getCodeLenses(document, parsed);
+        return codeLenses;
+    });
+
+    connection.onCodeLensResolve(codeLens => {
+        const retCodeLens = getCodeLensResolve(codeLens);
+        return retCodeLens;
     });
 
     connection.languages.semanticTokens.on((params) => {

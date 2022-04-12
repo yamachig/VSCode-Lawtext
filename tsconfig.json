@@ -40,6 +40,7 @@
         "out",
         "node_modules",
         ".vscode-test",
+        ".vscode-test-web",
     ],
     "files": [],
     "references": [

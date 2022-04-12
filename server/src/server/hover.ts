@@ -9,7 +9,7 @@ import {
 } from "vscode-languageserver-textdocument";
 
 import { EL } from "lawtext/dist/src/node/el";
-import { isStdEL, StdEL } from "lawtext/dist/src/law/std";
+import * as std from "lawtext/dist/src/law/std";
 import { Parsed } from "./common";
 
 export const getHover = (document: TextDocument, parsed: Parsed, position: Position): Hover | null => {
@@ -22,11 +22,12 @@ export const getHover = (document: TextDocument, parsed: Parsed, position: Posit
     const tags: string[] = [];
     let nextEL: EL | null = law;
     let el: EL | null = null;
-    let lastStdEL: StdEL | null = law;
+    let lastStdEL: std.StdEL | null = law;
     tags.push(nextEL.tag);
     while (nextEL) {
         el = nextEL as EL;
-        if (isStdEL(el)) lastStdEL = el;
+        if (std.isStdEL(el)) lastStdEL = el;
+
         nextEL = null;
         const tagsCount = new Map<string, number>();
         for (const child of el.children) {
