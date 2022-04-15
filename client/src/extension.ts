@@ -3,8 +3,6 @@ import { parse } from "lawtext/dist/src/parser/lawtext";
 import * as renderer from "lawtext/dist/src/renderer";
 import { isJsonEL, JsonEL } from "lawtext/dist/src/node/el";
 
-import lawCSS from "./static/law.css";
-
 const renderActiveEditor = (context: vscode.ExtensionContext) => {
     void context;
     const editor = vscode.window.activeTextEditor;
@@ -14,15 +12,7 @@ const renderActiveEditor = (context: vscode.ExtensionContext) => {
     }
     const lawtext = editor.document.getText();
     const { value: law } = parse(lawtext);
-    const rendered = renderer.renderHtml(
-        law,
-        {
-            style: [
-                lawCSS,
-                "body { background-color: white; color: black; padding: 0.5em; }"
-            ].join("\n"),
-        }
-    );
+    const rendered = renderer.renderHTML(law);
     return rendered;
 };
 
@@ -50,15 +40,7 @@ export const activate = (context: vscode.ExtensionContext) => {
                     {},
                 );
 
-                panel.webview.html = renderer.renderHtml(
-                    jsonEL,
-                    {
-                        style: [
-                            lawCSS,
-                            "body { background-color: white; color: black; padding: 0.5em; }"
-                        ].join("\n"),
-                    },
-                );
+                panel.webview.html = renderer.renderHTML(jsonEL);
             }
         })
     );
