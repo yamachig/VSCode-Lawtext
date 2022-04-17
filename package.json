@@ -25,7 +25,7 @@
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
-        "lawtext": "^0.1.6"
+        "lawtext": "^0.1.7"
     },
     "devDependencies": {
         "@types/node": "^17.0.23",
@@ -82,9 +82,19 @@
             {
                 "command": "extension.showLawtextPreview",
                 "title": "Show Lawtext Preview",
+                "icon": "$(preview)",
                 "category": "Lawtext"
             }
         ],
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "extension.showLawtextPreview",
+                    "group": "navigation",
+                    "when": "resourceLangId == lawtext"
+                }
+            ]
+        },
         "configurationDefaults": {
             "[lawtext]": {
                 "editor.tabSize": 2,
@@ -125,14 +135,6 @@
                     }
                 }
             }
-        },
-        "menus": {
-            "editor/title": [
-                {
-                    "command": "extension.showLawtextPreview",
-                    "when": "resourceLangId == lawtext"
-                }
-            ]
         }
     }
 }
