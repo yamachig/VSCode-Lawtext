@@ -43,7 +43,12 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
             ],
         },
 
-        plugins: [new WatchMessagePlugin()],
+        plugins: [
+            new WatchMessagePlugin(),
+            new webpack.DefinePlugin({
+                process: { env: {} }
+            })
+        ],
 
         watchOptions: {
             ignored: [

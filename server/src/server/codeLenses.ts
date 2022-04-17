@@ -15,6 +15,7 @@ export type PreviewJsonELCodeLens = Omit<CodeLens, "data"> & {
         command: "extension.previewJsonEL",
         title: string,
         jsonEL: JsonEL,
+        documentURI: string,
     }
 };
 export const isPreviewJsonELCodeLens = (codeLens: CodeLens): codeLens is PreviewJsonELCodeLens => {
@@ -34,6 +35,7 @@ function *codeLensesOfEL(document: TextDocument, el: EL | string | null | undefi
                 command: "extension.previewJsonEL" as const,
                 title: "📃表をプレビュー",
                 jsonEL: el.json(false),
+                documentURI: document.uri,
             }
         };
     }
@@ -48,7 +50,7 @@ export const getCodeLensResolve = (codeLens: CodeLens): CodeLens => {
             command: {
                 title: codeLens.data.title,
                 command: codeLens.data.command,
-                arguments: [codeLens.data.jsonEL],
+                arguments: [codeLens.data.jsonEL, codeLens.data.documentURI],
             }
         };
 
