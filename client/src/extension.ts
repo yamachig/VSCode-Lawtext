@@ -13,7 +13,7 @@ const renderHTML = (rawDocumentURI: string, el: JsonEL, convertUri?: (uri: vscod
         const convertedUri = convertUri ? convertUri(uri) : uri;
         const ext = path.extname(src) as keyof typeof pictMimeDict;
         const type = ext in pictMimeDict ? pictMimeDict[ext] : "application/octet-stream";
-        return { url: convertedUri.toString(), type };
+        return ext === ".pdf" ? null : { url: convertedUri.toString(), type };
     };
     return renderer.renderHTML(
         el,

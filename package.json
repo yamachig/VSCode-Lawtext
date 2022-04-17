@@ -1,6 +1,6 @@
 {
     "name": "lawtext",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "description": "Lawtext language server and preview",
     "displayName": "Lawtext",
     "author": "yamachi",
