@@ -19,14 +19,15 @@ export const showLawtextPreview = (context: vscode.ExtensionContext) => {
     if (editor.document.languageId !== "lawtext") return;
     const lawtext = editor.document.getText();
     const { value: el } = parse(lawtext);
+    analyze(el);
+
     const onCenterOffset = (offset: number) => {
         const position = editor.document.positionAt(offset);
         editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
     };
-    analyze(el);
 
     setTimeout(() => {
-        const initialCenterOffset = (
+        const initialCenterOffset = () => (
             editor.document.offsetAt(editor.visibleRanges[0].start)
             + editor.document.offsetAt(editor.visibleRanges[0].end)
         ) / 2;

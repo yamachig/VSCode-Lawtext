@@ -28,7 +28,7 @@ export interface PreviewELOptions {
     el: EL,
     rawDocumentURI?: string,
     onCenterOffset?: (offset: number) => void,
-    initialCenterOffset?: number,
+    initialCenterOffset?: number | (() => number),
     panel?: vscode.WebviewPanel,
 }
 
@@ -57,6 +57,14 @@ export const previewEL = (options: PreviewELOptions) => {
         convertFigUri,
     );
 
+    const initialCenterOffset = (
+        (typeof options.initialCenterOffset === "number")
+            ? options.initialCenterOffset
+            : (typeof options.initialCenterOffset === "function")
+                ? options.initialCenterOffset()
+                : undefined
+    );
+
     const html = /*html*/`\
 <!DOCTYPE html>
 <html lang="ja">
@@ -70,7 +78,7 @@ ${fragment}
 (() => {    
     const vscode = acquireVsCodeApi();
 
-    const initialCenterOffset = ${JSON.stringify(options.initialCenterOffset)};
+    const initialCenterOffset = ${JSON.stringify(initialCenterOffset)};
     let stickingScrollTop = null;
 
     const throttle = (func, waitms) => {
