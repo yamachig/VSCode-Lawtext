@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { JsonEL } from "lawtext/dist/src/node/el";
 import showLawtextPreview from "./command/showLawtextPreview";
-import previewJsonEL from "./command/previewJsonEL";
+import previewEL from "./command/previewEL";
+import { JsonEL, loadEl } from "lawtext/dist/src/node/el";
 
 
 export const activate = (context: vscode.ExtensionContext) => {
@@ -11,7 +11,10 @@ export const activate = (context: vscode.ExtensionContext) => {
     );
 
     context.subscriptions.push(
-        vscode.commands.registerCommand("extension.previewJsonEL", (...args: [el: JsonEL, rawDocumentURI: string]) => previewJsonEL(context, ...args))
+        vscode.commands.registerCommand("extension.previewEL", (jsonEL: JsonEL, rawDocumentURI: string) => {
+            const el = loadEl(jsonEL);
+            previewEL({ context, el, rawDocumentURI });
+        })
     );
 
 };
