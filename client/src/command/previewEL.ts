@@ -23,17 +23,33 @@ const renderHTMLFragment = (el: EL, convertFigUri?: (src: string) => vscode.Uri)
     return fragment;
 };
 
+export class Broadcast<T> {
+    private _listeners: Set<(e: T) => void> = new Set();
+    public add(listener: (e: T) => void) {
+        this._listeners.add(listener);
+    }
+    public remove(listener: (e: T) => void) {
+        this._listeners.delete(listener);
+    }
+    public broadcast(e: T) {
+        for (const listener of this._listeners) {
+            listener(e);
+        }
+    }
+}
+
 export interface PreviewELOptions {
     context: vscode.ExtensionContext,
     el: EL,
     rawDocumentURI?: string,
     onCenterOffset?: (offset: number) => void,
+    scrollEventTarget?: Broadcast<{offset: number}>,
     initialCenterOffset?: number | (() => number),
     panel?: vscode.WebviewPanel,
 }
 
 export const previewEL = (options: PreviewELOptions) => {
-    const { context, el, rawDocumentURI } = options;
+    const { context, el, rawDocumentURI, scrollEventTarget } = options;
 
     const panel = options.panel ?? vscode.window.createWebviewPanel(
         "lawtextPreview",
@@ -83,14 +99,17 @@ ${fragment}
 
     const throttle = (func, waitms) => {
         let timer;
+        const lastArgsObj = {};
         return (...args) => {
+            lastArgsObj.args = args;
             if (timer !== undefined) {
                 return;
                 // clearTimeout(timer);
             }
             timer = setTimeout(() => {
-                func(...args);
+                func(...lastArgsObj.args);
                 timer = undefined;
+                lastArgsObj.args = undefined;
             }, waitms);
         };
     };
@@ -98,12 +117,12 @@ ${fragment}
     const setCenterOffset = (offset) => {
         const rangeInfo = {
             start: {
-                d: Number.MIN_SAFE_INTEGER,
+                d: null,
                 top: 0,
             },
             end: {
-                d: Number.MAX_SAFE_INTEGER,
-                top: Number.MAX_SAFE_INTEGER,
+                d: null,
+                top: null,
             },
         };
         for (const el of document.querySelectorAll("[data-lawtext_range]")) {
@@ -114,27 +133,37 @@ ${fragment}
             const rect = el.getBoundingClientRect();
             const [startTop, startD] = relEnd <= 0 ? [rect.bottom, relEnd] : [rect.top, relStart];
             const [endTop, endD] = relStart >= 0 ? [rect.top, relStart] : [rect.bottom, relEnd];
-            if (startD <= 0 && rangeInfo.start.d < startD) {
+            if (startD <= 0 && ((rangeInfo.start.d === null) || (rangeInfo.start.d < startD))) {
                 rangeInfo.start.top = startTop;
                 rangeInfo.start.d = startD;
             }
-            if (0 <= endD && endD < rangeInfo.end.d) {
+            if (0 <= endD && ((rangeInfo.end.d === null) || (endD < rangeInfo.end.d))) {
                 rangeInfo.end.top = startTop;
                 rangeInfo.end.d = endD;
             }
         }
+        if ((rangeInfo.start.d === null) || (rangeInfo.end.d === null)) return;
         const r = -rangeInfo.start.d / (rangeInfo.end.d - rangeInfo.start.d);
         const top = rangeInfo.start.top + r * (rangeInfo.end.top - rangeInfo.start.top);
         const scrollEL = document.querySelector("html");
         const scrollELRect = scrollEL.getBoundingClientRect();
         const newScrollTop = (top - scrollELRect.top) - window.innerHeight / 2;
+        if (!Number.isFinite(newScrollTop)) return;
+        listeningPostCenterOffset = false;
         scrollEL.scrollTop = newScrollTop;
         stickingScrollTop = newScrollTop;
+        // console.log("setCenterOffset " + JSON.stringify({ offset, newScrollTop, rangeInfo }));
+        setTimeout(() => {
+            listeningPostCenterOffset = true;
+        }, 300);
     };
 
     const visibleELs = new Set();
 
+    let listeningPostCenterOffset = true;
+
     const postCenterOffset = () => {
+        if (!listeningPostCenterOffset) return;
         const scrollEL = document.querySelector("html");
         if (Math.abs(scrollEL.scrollTop - stickingScrollTop) < 1) {
             console.log("scrollTop sticking: " + JSON.stringify({ scrollTop: scrollEL.scrollTop, stickingScrollTop }));
@@ -145,11 +174,11 @@ ${fragment}
         const rangeInfo = {
             start: {
                 offset: 0,
-                y: Number.MIN_SAFE_INTEGER,
+                y: null,
             },
             end: {
-                offset: Number.MAX_SAFE_INTEGER,
-                y: Number.MAX_SAFE_INTEGER,
+                offset: null,
+                y: null,
             },
         }
         for (const el of visibleELs) {
@@ -160,21 +189,24 @@ ${fragment}
             const relBottom = rect.bottom - centerHeight;
             const [startY, startOffset] = relBottom <= 0 ? [relBottom, range[1]] : [relTop, range[0]];
             const [endY, endOffset] = relTop >= 0 ? [relTop, range[0]] : [relBottom, range[1]];
-            if (startY <= 0 && rangeInfo.start.y < startY) {
+            if (startY <= 0 && ((rangeInfo.start.y === null) || (rangeInfo.start.y < startY))) {
                 rangeInfo.start.offset = startOffset;
                 rangeInfo.start.y = startY;
             }
-            if (0 <= endY && endY < rangeInfo.end.y) {
+            if (0 <= endY && ((rangeInfo.end.y === null) || (endY < rangeInfo.end.y))) {
                 rangeInfo.end.offset = endOffset;
                 rangeInfo.end.y = endY;
             }
         }
+        if ((rangeInfo.start.y === null) || (rangeInfo.end.y === null)) return;
         const r = -rangeInfo.start.y / (rangeInfo.end.y - rangeInfo.start.y);
         const offset = Math.round(rangeInfo.start.offset + r * (rangeInfo.end.offset - rangeInfo.start.offset));
+        if (!Number.isFinite(offset)) return;
         vscode.postMessage({
             command: "centerOffset",
             offset,
         });
+        // console.log("postCenterOffset " + JSON.stringify({ rangeInfo, offset }));
     }
 
     const observerCallback = (entries, observer) => {
@@ -201,14 +233,18 @@ ${fragment}
             });
         });
     }
+    
     const observer =  new IntersectionObserver(observerCallback);
     for (const el of document.querySelectorAll("[data-lawtext_range]")) {
         observer.observe(el);
     }
-
     const throttlePostCenterOffset = throttle(postCenterOffset, 100);
     window.addEventListener("resize", throttlePostCenterOffset);
     window.addEventListener("scroll", throttlePostCenterOffset);
+
+    window.addEventListener("message", event => {
+        setCenterOffset(event.data.offset);
+    });
 
 })();
 </script>
@@ -230,6 +266,22 @@ ${fragment}
         undefined,
         context.subscriptions
     );
+
+    if (scrollEventTarget) {
+        const scrollHandler = (e: {offset: number}) => {
+            const { offset } = e;
+            panel.webview.postMessage({
+                command: "scroll",
+                offset,
+            });
+        };
+        scrollEventTarget.add(scrollHandler);
+        context.subscriptions.push({
+            dispose: () => {
+                scrollEventTarget.remove(scrollHandler);
+            }
+        });
+    }
 
     panel.webview.html = html;
 };
