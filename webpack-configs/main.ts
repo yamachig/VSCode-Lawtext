@@ -36,8 +36,10 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
         },
         module: {
             rules: [
-                { test: /\.ts$/, loader: "ts-loader" },
+                { test: /\.tsx?$/, loader: "ts-loader" },
                 { test: /\.css$/, type: "asset/source" },
+                { test: /\.html$/, type: "asset/source" },
+                { test: /\.txt$/, type: "asset/source" },
             ],
         },
 
@@ -59,11 +61,40 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
     return config;
 };
 
+// const mainPreviewerConfig = (env: Record<string, string>, argv: Record<string, string>): webpack.Configuration => {
+//     const projDir = path.resolve(rootDir, "client");
+//     const common = commonConfig(env, argv, projDir);
+//     const config: webpack.Configuration = {
+//         ...common,
+//         name: "previewer",
+//         target: "web",
+//         entry: {
+//             bundle: path.resolve(projDir, "./src/previewer/src/index.tsx")
+//         },
+//         output: {
+//             ...common.output,
+//             filename: "[name].js.txt",
+//             path: path.resolve(projDir, "./src/previewer/out"),
+//             libraryTarget: "commonjs",
+//         },
+
+//         plugins: [
+//             ...(common.plugins || []),
+//             new webpack.DefinePlugin({
+//                 process: { env: {} }
+//             })
+//         ],
+//     };
+//     return config;
+// };
+
 const mainClientConfig = (env: Record<string, string>, argv: Record<string, string>): webpack.Configuration => {
     const projDir = path.resolve(rootDir, "client");
     const common = commonConfig(env, argv, projDir);
     const config: webpack.Configuration = {
         ...common,
+        name: "main-client",
+        dependencies: ["previewer"],
         output: {
             ...common.output,
             libraryTarget: "commonjs",
@@ -77,6 +108,7 @@ const mainServerConfig = (env: Record<string, string>, argv: Record<string, stri
     const common = commonConfig(env, argv, projDir);
     const config: webpack.Configuration = {
         ...common,
+        name: "main-server",
         output: {
             ...common.output,
             libraryTarget: "commonjs",

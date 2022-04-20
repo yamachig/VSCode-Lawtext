@@ -4,6 +4,9 @@ import htmlCSS from "lawtext/dist/src/renderer/rules/htmlCSS";
 import { EL } from "lawtext/dist/src/node/el";
 import path from "path";
 import { pictMimeDict } from "lawtext/dist/src/util";
+import _previewerScript from "../previewer/out/bundle.js.txt";
+
+const previewerScript = _previewerScript.replace(/<\/script>/g, "</ script>");
 
 const renderHTMLFragment = (el: EL, convertFigUri?: (src: string) => vscode.Uri) => {
     const getFigData = (src: string) => {
@@ -49,6 +52,49 @@ export interface PreviewELOptions {
 }
 
 export const previewEL = (options: PreviewELOptions) => {
+    const { el } = options;
+
+    const panel = options.panel ?? vscode.window.createWebviewPanel(
+        "lawtextPreview",
+        "Lawtext Preview",
+        vscode.ViewColumn.Two,
+        {
+            enableScripts: true,
+            enableFindWidget: true,
+        },
+    );
+
+    const html = /*html*/`\
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>${htmlCSS}</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+${previewerScript}
+</script>
+</body>
+</html>
+`;
+
+    panel.webview.html = html;
+    panel.webview.postMessage({
+        command: "setState",
+        state: {
+            els: [el.json(true)],
+            htmlOptions: {
+                renderControlEL: true,
+                renderPDFAsLink: true,
+                annotateLawtextRange: true,
+            }
+        },
+    });
+};
+
+export const ___previewEL = (options: PreviewELOptions) => {
     const { context, el, rawDocumentURI, scrollEventTarget } = options;
 
     const panel = options.panel ?? vscode.window.createWebviewPanel(

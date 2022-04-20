@@ -9,6 +9,8 @@
         "sourceMap": true,
         "declaration": true,
         // "suppressImplicitAnyIndexErrors": true
+
+        "jsx": "react",
         
         "downlevelIteration": true,
         "moduleResolution": "node",
