@@ -3,27 +3,77 @@ import { createRoot } from "react-dom/client";
 import { HTMLAnyELs } from "lawtext/dist/src/renderer/rules/any";
 import htmlCSS from "lawtext/dist/src/renderer/rules/htmlCSS";
 import * as std from "lawtext/dist/src/law/std";
-import { PreviewerState, PreviewerStateJSON, toState, toStateJSON } from "./stateInterface";
+import { PreviewerOptions } from "./stateInterface";
+import { omit } from "lawtext/dist/src/util";
+import { HTMLOptions } from "lawtext/dist/src/renderer/common/html";
+import { EL, loadEl } from "lawtext/dist/src/node/el";
 
 
-const vscode = acquireVsCodeApi<PreviewerStateJSON>();
-const previousState = toState(vscode.getState() ?? { els: [], htmlOptions: {}, scrollOffset: 0 });
+const vscode = acquireVsCodeApi<WebviewState>();
+
+interface WebviewState {
+    els: PreviewerOptions["els"];
+    htmlOptions: PreviewerOptions["htmlOptions"];
+    scrollRatioMemo: number;
+}
+
+interface PreviewerState {
+    els: EL[],
+    htmlOptions: HTMLOptions,
+}
+
+export const toWebviewState = (state: Partial<PreviewerState>): Partial<WebviewState> => {
+    const htmlOptions: WebviewState["htmlOptions"] | undefined = state.htmlOptions ? {
+        ...omit(state.htmlOptions, "getFigData"),
+    } : undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const figDataMap = (state.htmlOptions?.getFigData as any)?.figDataMap;
+    if (figDataMap && htmlOptions) {
+        htmlOptions.figDataMap = figDataMap;
+    }
+    const ret: Partial<WebviewState> = {};
+    if (state.els) ret.els = state.els.map(el => el.json(true, true));
+    if (htmlOptions) ret.htmlOptions = htmlOptions;
+    return ret;
+};
+
+const toPreviewerState = (stateJSON: Partial<WebviewState>): Partial<PreviewerState> => {
+    const htmlOptions: HTMLOptions | undefined = stateJSON.htmlOptions ? {
+        ...omit(stateJSON.htmlOptions, "figDataMap"),
+    } : undefined;
+    const getFigData = (
+        stateJSON.htmlOptions?.figDataMap
+        && ((src: string) => (stateJSON.htmlOptions?.figDataMap?.[src] ?? null))
+    );
+    if (getFigData && stateJSON.htmlOptions?.figDataMap) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (getFigData as any).figDataMap = stateJSON.htmlOptions.figDataMap;
+    }
+    const ret: Partial<PreviewerState> = {};
+    if (stateJSON.els) ret.els = stateJSON.els.map(loadEl);
+    ret.htmlOptions = { ...htmlOptions, ...(getFigData ? { getFigData } : {}) };
+    return ret;
+};
 
 
-function throttle<TArgs extends unknown[]>(func: (...args: TArgs) => unknown, waitms: number) {
+function throttle<TArgs extends unknown[]>(func: (...args: TArgs) => unknown, waitms: number, initialWaitms?: number) {
     let timer: NodeJS.Timeout| undefined = undefined;
     const lastArgsObj: {args?: TArgs} = {};
+    const dispatchLastArgs = () => {
+        if (lastArgsObj.args) {
+            const args = lastArgsObj.args;
+            lastArgsObj.args = undefined;
+            func(...args);
+            timer = setTimeout(dispatchLastArgs, waitms);
+        } else {
+            timer = undefined;
+        }
+    };
     return (...args: TArgs) => {
         lastArgsObj.args = args;
-        if (timer !== undefined) {
-            return;
-            // clearTimeout(timer);
+        if (timer === undefined) {
+            timer = setTimeout(dispatchLastArgs, initialWaitms ?? waitms);
         }
-        timer = setTimeout(() => {
-            func(...(lastArgsObj.args as TArgs));
-            timer = undefined;
-            lastArgsObj.args = undefined;
-        }, waitms);
     };
 }
 
@@ -31,7 +81,8 @@ interface ActionCounter {
     scroll: number;
 }
 
-const scrollToOffset = (offset: number) => {
+const scrollToOffset = (offset: number, counter: ActionCounter) => {
+    console.log(`scrollToOffset: ${offset}`);
     const rangeInfo = {
         start: {
             d: null as number | null,
@@ -68,6 +119,7 @@ const scrollToOffset = (offset: number) => {
     const newScrollTop = (top - scrollELRect.top) - window.innerHeight / 2;
     if (!Number.isFinite(newScrollTop)) return;
 
+    counter.scroll += 1;
     scrollEL.scrollTop = newScrollTop;
 };
 
@@ -111,28 +163,31 @@ const getCenterOffset = (visibleELs: Set<HTMLElement>) => {
 };
 
 const App = () => {
-    const [state, _setState] = React.useState<PreviewerState>(previousState);
+    const [state, setState] = React.useState<PreviewerState>(() => {
+        const prevWebviewState = vscode.getState();
+        return {
+            els: [],
+            htmlOptions: {},
+            scrollRatioMemo: 0,
+            ...(prevWebviewState ? toPreviewerState(prevWebviewState) : {}),
+        };
+    });
     const { els, htmlOptions } = state;
 
     const visibleELs = React.useMemo(() => new Set<HTMLElement>(), []);
 
     const counter = React.useMemo<ActionCounter>(() => ({ scroll: 0 }), []);
 
-    const setState = React.useCallback((newStateFunc: (prevState: PreviewerState) => PreviewerState) => {
-        _setState(prevState => {
-            const newState = newStateFunc(prevState);
-            vscode.setState(toStateJSON(newState));
-            return newState;
-        });
-    }, []);
-
-    const setStateJSON = React.useCallback((newStateJSONFunc: (prevStateJSON: PreviewerStateJSON) => PreviewerStateJSON) => {
-        _setState(prevState => {
-            const newStateJSON = newStateJSONFunc(prevState);
-            vscode.setState(newStateJSON);
-            return toState(newStateJSON);
-        });
-    }, []);
+    // Run on first render of els
+    React.useEffect(() => {
+        const webviewState = vscode.getState();
+        if (webviewState && webviewState.scrollRatioMemo > 0) {
+            const scrollEL = document.querySelector("html");
+            if (!scrollEL) return;
+            scrollEL.scrollTop = scrollEL.scrollHeight * webviewState.scrollRatioMemo;
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [els]);
 
 
     React.useEffect(() => {
@@ -158,47 +213,69 @@ const App = () => {
     React.useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const onMessage = (event: any) => {
-            if (event.data?.command === "setState") {
-                setStateJSON(() => event.data.state as PreviewerStateJSON);
+            if (event.data?.command === "setOptions") {
+                console.log(`Received setOptions: ${JSON.stringify(omit(event.data.options, "els"))}`);
+                const options = event.data.options as PreviewerOptions;
+                vscode.setState({
+                    ...(vscode.getState() as WebviewState),
+                    ...omit(options, "centerOffset"),
+                });
+                setState(prevState => ({ ...prevState, ...toPreviewerState(options) }));
+                setTimeout(() => {
+                    if (typeof options.centerOffset === "number") {
+                        scrollToOffset(options.centerOffset, counter);
+                    }
+                }, 0);
             }
         };
         window.addEventListener("message", onMessage);
         return () => window.removeEventListener("message", onMessage);
-    }, [setStateJSON]);
+    }, [counter]);
 
     React.useEffect(() => {
-        console.log(`scrollOffset changed: ${state.scrollOffset}`);
-        scrollToOffset(state.scrollOffset);
-    }, [state.scrollOffset]);
+        const onCenterOffsetChanged = () => {
+            vscode.postMessage({
+                command: "centerOffsetChanged",
+                offset: getCenterOffset(visibleELs),
+            });
+        };
+        const throttleOnCenterOffsetChanged = throttle(onCenterOffsetChanged, 100, 0);
 
-    React.useEffect(() => {
+        const saveScrollRatio = () => {
+            const scrollEL = document.querySelector("html");
+            if (!scrollEL) return;
+            const scrollRatio = scrollEL.scrollTop / scrollEL.scrollHeight;
+            vscode.setState({
+                ...(vscode.getState() as WebviewState),
+                scrollRatioMemo: scrollRatio,
+            });
+        };
+        const throttleSaveScrollRatio = throttle(saveScrollRatio, 500);
+
         const onScroll = () => {
+            throttleSaveScrollRatio();
             if (counter.scroll > 0) {
                 counter.scroll--;
             } else {
-                counter.scroll++;
-                const offset = getCenterOffset(visibleELs);
-                if (typeof offset === "number") {
-                    setState(prevState => ({ ...prevState, scrollOffset: offset }));
-                } else {
-                    counter.scroll--;
-                }
+                throttleOnCenterOffsetChanged();
             }
         };
-        const throttleOnScroll = throttle(onScroll, 100);
-        window.addEventListener("scroll", throttleOnScroll);
-        window.addEventListener("resize", throttleOnScroll);
+
+        window.addEventListener("scroll", onScroll);
+        window.addEventListener("resize", onScroll);
         return () => {
-            window.removeEventListener("scroll", throttleOnScroll);
-            window.removeEventListener("resize", throttleOnScroll);
+            window.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", onScroll);
         };
-    }, [counter.scroll, setState, visibleELs]);
+    }, [counter, counter.scroll, setState, visibleELs]);
+
+    const MemoHTMLAnyELs = React.useMemo(() => React.memo(HTMLAnyELs), []);
 
     return (<>
         <style>
             {htmlCSS}
         </style>
-        <HTMLAnyELs
+        <MemoHTMLAnyELs
             els={els as (string | std.StdEL | std.__EL)[]}
             indent={0}
             {...{ htmlOptions: {

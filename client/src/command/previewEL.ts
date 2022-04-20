@@ -6,7 +6,7 @@ import * as std from "lawtext/dist/src/law/std";
 import path from "path";
 import { pictMimeDict } from "lawtext/dist/src/util";
 import _previewerScript from "../previewer/out/bundle.js.txt";
-import { PreviewerStateJSON } from "../previewer/src/stateInterface";
+import { PreviewerOptions } from "../previewer/src/stateInterface";
 
 const previewerScript = _previewerScript.replace(/<\/script>/g, "</ script>");
 
@@ -69,7 +69,7 @@ const getFigDataMap = (el: EL | string, convertFigSrc: (src: string) => string) 
 };
 
 export const previewEL = (options: PreviewELOptions) => {
-    const { el, rawDocumentURI } = options;
+    const { context, el, rawDocumentURI } = options;
 
     const panel = options.panel ?? vscode.window.createWebviewPanel(
         "lawtextPreview",
@@ -114,16 +114,15 @@ ${previewerScript}
         Object.assign(figDataMap, getFigDataMap(el, convertFigSrc));
     }
 
-    const htmlOptions: PreviewerStateJSON["htmlOptions"] = {
+    const htmlOptions: PreviewerOptions["htmlOptions"] = {
         renderControlEL: true,
         renderPDFAsLink: true,
         figDataMap,
     };
 
-    const previewerState: PreviewerStateJSON = {
+    const previewerOptions: PreviewerOptions = {
         els,
         htmlOptions,
-        scrollOffset: 0,
     };
 
     const initialCenterOffset = (
@@ -134,12 +133,28 @@ ${previewerScript}
                 : undefined
     );
 
-    if (initialCenterOffset !== undefined) previewerState.scrollOffset = initialCenterOffset;
+    if (initialCenterOffset !== undefined) previewerOptions.centerOffset = initialCenterOffset;
 
     panel.webview.postMessage({
-        command: "setState",
-        state: previewerState,
+        command: "setOptions",
+        options: previewerOptions,
     });
+
+    panel.webview.onDidReceiveMessage(
+        message => {
+            console.log(`Received message: ${message.command}`);
+            if (message.command === "openLink") {
+                const uri = vscode.Uri.parse(message.href);
+                vscode.commands.executeCommand("vscode.open", uri);
+            } else if (message.command === "centerOffsetChanged") {
+                if (options.onCenterOffset) {
+                    options.onCenterOffset(message.offset);
+                }
+            }
+        },
+        undefined,
+        context.subscriptions
+    );
 };
 
 export const ___previewEL = (options: PreviewELOptions) => {

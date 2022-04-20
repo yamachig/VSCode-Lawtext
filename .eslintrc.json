@@ -80,7 +80,11 @@
             ],
             "parser": "@typescript-eslint/parser",
             "parserOptions": {
-                "project": "./tsconfig.json",
+                "project": [
+                    "./server/tsconfig.json", 
+                    "./client/tsconfig.json",
+                    "./webpack-configs/tsconfig.json"
+                ],
                 "ecmaVersion": 12
             },
             "rules": {
