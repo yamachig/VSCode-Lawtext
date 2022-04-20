@@ -184,8 +184,30 @@ const App = () => {
         if (webviewState && webviewState.scrollRatioMemo > 0) {
             const scrollEL = document.querySelector("html");
             if (!scrollEL) return;
+            counter.scroll += 1;
             scrollEL.scrollTop = scrollEL.scrollHeight * webviewState.scrollRatioMemo;
         }
+
+        const anchorOnClick = (e: MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            vscode.postMessage({
+                command: "openLink",
+                href: (e.currentTarget as HTMLAnchorElement).href,
+            });
+        };
+
+        const anchors = Array.from(document.querySelectorAll("a[href]")) as HTMLAnchorElement[];
+
+        for (const a of anchors) {
+            a.addEventListener("click", anchorOnClick);
+        }
+
+        return () => {
+            for (const a of anchors) {
+                a.removeEventListener("click", anchorOnClick);
+            }
+        };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [els]);
 
