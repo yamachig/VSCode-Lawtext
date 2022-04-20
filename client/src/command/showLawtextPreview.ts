@@ -26,27 +26,20 @@ export const showLawtextPreview = (context: vscode.ExtensionContext) => {
         + editor.document.offsetAt(editor.visibleRanges[0].end)
     ) / 2;
 
-    let stickingOffset: number | null = null;
-
-    let listeningOnDidChangeTextEditorVisibleRanges = true;
+    let scrollCounter = 0;
     const onDidChangeTextEditorVisibleRanges = () => {
-        if (!listeningOnDidChangeTextEditorVisibleRanges) return;
-        const offset = centerOffset();
-        if ((stickingOffset !== null) && (Math.abs(offset - stickingOffset) < 10)) {
-            console.log("offset sticking: " + JSON.stringify({ offset, stickingOffset }));
-            return;
+        if (scrollCounter > 0) {
+            scrollCounter--;
+        } else {
+            const offset = centerOffset();
+            scrollEventTarget.broadcast({ offset });
         }
-        scrollEventTarget.broadcast({ offset });
     };
 
     const onCenterOffset = (offset: number) => {
         const position = editor.document.positionAt(offset);
-        stickingOffset = offset;
-        listeningOnDidChangeTextEditorVisibleRanges = false;
+        scrollCounter++;
         editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
-        setTimeout(() => {
-            listeningOnDidChangeTextEditorVisibleRanges = true;
-        }, 300);
     };
 
     const scrollEventTarget = new Broadcast<{offset: number}>();

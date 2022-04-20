@@ -291,6 +291,17 @@ const App = () => {
         };
     }, [counter, counter.scroll, setState, visibleELs]);
 
+    React.useEffect(() => {
+        const onMessage = (event: MessageEvent) => {
+            if (event.data?.command === "scrollToOffset") {
+                scrollToOffset(event.data.offset, counter);
+            }
+        };
+
+        window.addEventListener("message", onMessage);
+        return () => window.removeEventListener("message", onMessage);
+    }, [counter]);
+
     const MemoHTMLAnyELs = React.useMemo(() => React.memo(HTMLAnyELs), []);
 
     return (<>
