@@ -28,8 +28,8 @@ export interface PreviewELOptions {
     context: vscode.ExtensionContext,
     el: EL,
     rawDocumentURI?: string,
-    onCenterOffset?: (offset: number) => void,
-    scrollEventTarget?: Broadcast<{offset: number}>,
+    onPreviewOffsetChanged?: (offset: number) => void,
+    editorOffsetChangedEventTarget?: Broadcast<{offset: number}>,
     initialCenterOffset?: number | (() => number),
     panel?: vscode.WebviewPanel,
 }
@@ -50,7 +50,7 @@ const getFigDataMap = (el: EL | string, convertFigSrc: (src: string) => string) 
 };
 
 export const previewEL = (options: PreviewELOptions) => {
-    const { context, el, rawDocumentURI, scrollEventTarget } = options;
+    const { context, el, rawDocumentURI, editorOffsetChangedEventTarget } = options;
 
     const panel = options.panel ?? vscode.window.createWebviewPanel(
         "lawtextPreview",
@@ -127,8 +127,8 @@ ${previewerScript}
                 const uri = vscode.Uri.parse(message.href);
                 vscode.commands.executeCommand("vscode.open", uri);
             } else if (message.command === "centerOffsetChanged") {
-                if (options.onCenterOffset) {
-                    options.onCenterOffset(message.offset);
+                if (options.onPreviewOffsetChanged) {
+                    options.onPreviewOffsetChanged(message.offset);
                 }
             }
         },
@@ -136,7 +136,7 @@ ${previewerScript}
         context.subscriptions
     );
 
-    if (scrollEventTarget) {
+    if (editorOffsetChangedEventTarget) {
         const scrollHandler = (e: {offset: number}) => {
             const { offset } = e;
             panel.webview.postMessage({
@@ -144,10 +144,10 @@ ${previewerScript}
                 offset,
             });
         };
-        scrollEventTarget.add(scrollHandler);
+        editorOffsetChangedEventTarget.add(scrollHandler);
         context.subscriptions.push({
             dispose: () => {
-                scrollEventTarget.remove(scrollHandler);
+                editorOffsetChangedEventTarget.remove(scrollHandler);
             }
         });
     }
