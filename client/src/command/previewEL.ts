@@ -5,7 +5,7 @@ import * as std from "lawtext/dist/src/law/std";
 import path from "path";
 import { pictMimeDict } from "lawtext/dist/src/util";
 import _previewerScript from "../previewer/out/bundle.js.txt";
-import { PreviewerOptions } from "../previewer/src/stateInterface";
+import { PreviewerOptions } from "../previewer/src/optionsInterface";
 
 const previewerScript = _previewerScript.replace(/<\/script>/g, "</ script>");
 
