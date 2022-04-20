@@ -3,6 +3,14 @@ import { parse } from "lawtext/dist/src/parser/lawtext";
 import { analyze } from "lawtext/dist/src/analyzer";
 import previewEL, { Broadcast } from "./previewEL";
 
+
+const centerOffset = (editor: vscode.TextEditor) => (
+    editor.document.offsetAt(editor.visibleRanges[0].start)
+    + editor.document.offsetAt(editor.visibleRanges[0].end)
+) / 2;
+
+const scrollCounter: Record<string, number> = {};
+
 export const showLawtextPreview = (context: vscode.ExtensionContext) => {
     const disposables: vscode.Disposable[] = [];
     const panel = vscode.window.createWebviewPanel(
@@ -15,36 +23,36 @@ export const showLawtextPreview = (context: vscode.ExtensionContext) => {
         },
     );
 
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-    if (editor.document.languageId !== "lawtext") return;
+    const initialEditor = vscode.window.activeTextEditor;
+    if (!initialEditor) return;
+    if (initialEditor.document.languageId !== "lawtext") return;
 
-    const documentURI = editor.document.uri;
+    const documentURI = initialEditor.document.uri;
+    const documentURIStr = documentURI.toString();
+    scrollCounter[documentURIStr] = 0;
 
-    const lawtext = editor.document.getText();
+    const lawtext = initialEditor.document.getText();
     const { value: el } = parse(lawtext);
     analyze(el);
 
-    const centerOffset = () => (
-        editor.document.offsetAt(editor.visibleRanges[0].start)
-        + editor.document.offsetAt(editor.visibleRanges[0].end)
-    ) / 2;
-
-    let scrollCounter = 0;
     const onDidChangeTextEditorVisibleRanges = (e: vscode.TextEditorVisibleRangesChangeEvent) => {
-        if (e.textEditor.document.uri.toString() !== documentURI.toString()) return;
-        if (scrollCounter > 0) {
-            scrollCounter--;
+        console.log("onDidChangeTextEditorVisibleRanges");
+        if (e.textEditor.document.uri.toString() !== documentURIStr) return;
+        if (scrollCounter[documentURIStr] > 0) {
+            scrollCounter[documentURIStr]--;
         } else {
-            const offset = centerOffset();
+            const offset = centerOffset(e.textEditor);
             editorOffsetChangedEventTarget.broadcast({ offset });
         }
     };
 
     const onPreviewOffsetChanged = (offset: number) => {
-        const position = editor.document.positionAt(offset);
-        scrollCounter++;
-        editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+        const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentURIStr);
+        if (editor) {
+            const position = editor.document.positionAt(offset);
+            scrollCounter[documentURIStr]++;
+            editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+        }
     };
 
     const editorOffsetChangedEventTarget = new Broadcast<{offset: number}>();
@@ -52,9 +60,9 @@ export const showLawtextPreview = (context: vscode.ExtensionContext) => {
     setTimeout(() => {
         previewEL({
             context, el,
-            rawDocumentURI: editor.document.uri.toString(),
+            rawDocumentURI: initialEditor.document.uri.toString(),
             onPreviewOffsetChanged,
-            initialCenterOffset: centerOffset,
+            initialCenterOffset: () => centerOffset(initialEditor),
             editorOffsetChangedEventTarget,
             panel,
         });
