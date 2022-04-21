@@ -1,8 +1,8 @@
 import { JsonEL } from "lawtext/dist/src/node/el";
 
 export interface PreviewerOptions {
-    els: JsonEL[],
-    htmlOptions: {
+    els?: JsonEL[],
+    htmlOptions?: {
         figDataMap?: Record<string, {url: string, type: string}>;
         renderControlEL?: boolean;
         renderPDFAsLink?: boolean;

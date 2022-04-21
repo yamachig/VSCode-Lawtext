@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import previewEL, { Broadcast } from "./previewEL";
 import { parse } from "lawtext/dist/src/parser/lawtext";
 import { analyze } from "lawtext/dist/src/analyzer";
+import { PreviewerOptions } from "../previewer/src/optionsInterface";
+import { throttle } from "lawtext/dist/src/util";
 
 const centerOffset = (documentURIStr: string) => {
     const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentURIStr);
@@ -16,6 +18,7 @@ interface PreviewState {
     scrollCount: number,
     editorOffsetChangedEventTarget: Broadcast<{offset: number}>,
     syncEnabled: boolean,
+    updateELs: (document: vscode.TextDocument) => void,
 }
 
 class SyncedPreviewsManager extends vscode.Disposable {
@@ -25,6 +28,7 @@ class SyncedPreviewsManager extends vscode.Disposable {
     constructor() {
         super(() => this.dispose());
         this.disposables.add(vscode.window.onDidChangeTextEditorVisibleRanges(this.onDidChangeTextEditorVisibleRanges.bind(this)));
+        this.disposables.add(vscode.workspace.onDidChangeTextDocument(this.onDidChangeTextDocument.bind(this)));
     }
 
     public override dispose() {
@@ -42,7 +46,6 @@ class SyncedPreviewsManager extends vscode.Disposable {
             const lawtext = document.getText();
             const { value: el } = parse(lawtext);
             analyze(el);
-
             const panel = vscode.window.createWebviewPanel(
                 "lawtextPreview",
                 "Lawtext Preview",
@@ -56,11 +59,27 @@ class SyncedPreviewsManager extends vscode.Disposable {
                 this.states.delete(documentURIStr);
             });
 
+            const updateELs = throttle((document: vscode.TextDocument) => {
+                const lawtext = document.getText();
+                const { value: el } = parse(lawtext);
+                analyze(el);
+
+                const previewerOptions: PreviewerOptions = {
+                    els: [el.json(true, true)],
+                };
+
+                state.panel.webview.postMessage({
+                    command: "setOptions",
+                    options: previewerOptions,
+                });
+            }, 300);
+
             const state: PreviewState = {
                 panel,
                 scrollCount: 0,
                 editorOffsetChangedEventTarget: new Broadcast<{offset: number}>(),
                 syncEnabled: false,
+                updateELs,
             };
             this.states.set(documentURIStr, state);
 
@@ -102,6 +121,13 @@ class SyncedPreviewsManager extends vscode.Disposable {
                 }
             }
         }
+    }
+
+    private onDidChangeTextDocument(e: vscode.TextDocumentChangeEvent) {
+        const documentURIStr = e.document.uri.toString();
+        const state = this.states.get(documentURIStr);
+        if (!state) return;
+        state.updateELs(e.document);
     }
 }
 

@@ -4,7 +4,7 @@ import { HTMLAnyELs } from "lawtext/dist/src/renderer/rules/any";
 import htmlCSS from "lawtext/dist/src/renderer/rules/htmlCSS";
 import * as std from "lawtext/dist/src/law/std";
 import { PreviewerOptions } from "./optionsInterface";
-import { omit } from "lawtext/dist/src/util";
+import { omit, throttle } from "lawtext/dist/src/util";
 import { HTMLOptions } from "lawtext/dist/src/renderer/common/html";
 import { EL, loadEl } from "lawtext/dist/src/node/el";
 import { ActionCounter, getCenterOffset, scrollToOffset } from "./offset";
@@ -55,28 +55,6 @@ const toPreviewerState = (stateJSON: Partial<WebviewState>): Partial<PreviewerSt
     ret.htmlOptions = { ...htmlOptions, ...(getFigData ? { getFigData } : {}) };
     return ret;
 };
-
-
-function throttle<TArgs extends unknown[]>(func: (...args: TArgs) => unknown, waitms: number, initialWaitms?: number) {
-    let timer: NodeJS.Timeout| undefined = undefined;
-    const lastArgsObj: {args?: TArgs} = {};
-    const dispatchLastArgs = () => {
-        if (lastArgsObj.args) {
-            const args = lastArgsObj.args;
-            lastArgsObj.args = undefined;
-            func(...args);
-            timer = setTimeout(dispatchLastArgs, waitms);
-        } else {
-            timer = undefined;
-        }
-    };
-    return (...args: TArgs) => {
-        lastArgsObj.args = args;
-        if (timer === undefined) {
-            timer = setTimeout(dispatchLastArgs, initialWaitms ?? waitms);
-        }
-    };
-}
 
 
 const App = () => {
