@@ -76,7 +76,7 @@
         ],
         "keybindings": [
             {
-                "command": "extension.showLawtextPreview",
+                "command": "lawtext.showLawtextPreview",
                 "key": "shift+ctrl+l",
                 "mac": "shift+cmd+l",
                 "when": "editorTextFocus"
@@ -84,16 +84,21 @@
         ],
         "commands": [
             {
-                "command": "extension.showLawtextPreview",
+                "command": "lawtext.showLawtextPreview",
                 "title": "Show Lawtext Preview",
                 "icon": "$(preview)",
+                "category": "Lawtext"
+            },
+            {
+                "command": "lawtext.openURI",
+                "title": "Open Lawtext URI",
                 "category": "Lawtext"
             }
         ],
         "menus": {
             "editor/title": [
                 {
-                    "command": "extension.showLawtextPreview",
+                    "command": "lawtext.showLawtextPreview",
                     "group": "navigation",
                     "when": "resourceLangId == lawtext"
                 }

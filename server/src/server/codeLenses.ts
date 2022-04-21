@@ -12,14 +12,14 @@ import { Parsed, toRange } from "./common";
 
 export type PreviewJsonELCodeLens = Omit<CodeLens, "data"> & {
     data: {
-        command: "extension.previewEL",
+        command: "lawtext.previewEL",
         title: string,
         jsonEL: JsonEL,
         documentURI: string,
     }
 };
 export const isPreviewJsonELCodeLens = (codeLens: CodeLens): codeLens is PreviewJsonELCodeLens => {
-    return codeLens.data?.command === "extension.previewEL";
+    return codeLens.data?.command === "lawtext.previewEL";
 };
 
 export const getCodeLenses = (document: TextDocument, parsed: Parsed): PreviewJsonELCodeLens[] => {
@@ -32,7 +32,7 @@ function *codeLensesOfEL(document: TextDocument, el: EL | string | null | undefi
         yield {
             range: toRange(document, el.range),
             data: {
-                command: "extension.previewEL" as const,
+                command: "lawtext.previewEL" as const,
                 title: "📃表をプレビュー",
                 jsonEL: el.json(true),
                 documentURI: document.uri,

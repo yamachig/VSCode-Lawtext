@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 import htmlCSS from "lawtext/dist/src/renderer/rules/htmlCSS";
-import { EL } from "lawtext/dist/src/node/el";
+import { EL, JsonEL, loadEl } from "lawtext/dist/src/node/el";
 import * as std from "lawtext/dist/src/law/std";
 import path from "path";
 import { pictMimeDict } from "lawtext/dist/src/util";
-import previewerScript from "../previewer/out/bundle.js.txt";
-import { PreviewerOptions } from "../previewer/src/optionsInterface";
+import previewerScript from "../../previewer/out/bundle.js.txt";
+import { PreviewerOptions } from "../../previewer/src/optionsInterface";
 
 const previewerHTML = /*html*/`\
 <!DOCTYPE html>
@@ -40,8 +40,6 @@ export class Broadcast<T> {
 }
 
 export interface PreviewELOptions {
-    el: EL,
-    rawDocumentURI?: string,
     onPreviewOffsetChanged?: (offset: number) => void,
     editorOffsetChangedEventTarget?: Broadcast<{offset: number}>,
     initialCenterOffset?: number | (() => number),
@@ -63,10 +61,12 @@ const getFigDataMap = (el: EL | string, convertFigSrc: (src: string) => string) 
     return figDataMap;
 };
 
-export const previewEL = (options: PreviewELOptions) => {
+export const previewEL = (elOrJsonEL: EL | JsonEL, rawDocumentURI?: string, options: PreviewELOptions = {}) => {
     const disposables: Set<vscode.Disposable> = new Set();
 
-    const { el, rawDocumentURI, editorOffsetChangedEventTarget } = options;
+    const { editorOffsetChangedEventTarget } = options;
+
+    const el = elOrJsonEL instanceof EL ? elOrJsonEL : loadEl(elOrJsonEL);
 
     const panel = options.panel ?? vscode.window.createWebviewPanel(
         "lawtextPreview",

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import previewEL, { Broadcast } from "./previewEL";
+import previewEL, { Broadcast } from "./command/previewEL";
 import { parse } from "lawtext/dist/src/parser/lawtext";
 import { analyze } from "lawtext/dist/src/analyzer";
 import { PreviewerOptions } from "../previewer/src/optionsInterface";
@@ -84,14 +84,16 @@ class SyncedPreviewsManager extends vscode.Disposable {
             this.states.set(documentURIStr, state);
 
             setTimeout(() => {
-                previewEL({
+                previewEL(
                     el,
-                    rawDocumentURI: documentURIStr,
-                    onPreviewOffsetChanged: (offset: number) => this.onPreviewOffsetChanged(documentURIStr, offset),
-                    initialCenterOffset: () => centerOffset(documentURIStr) ?? 0,
-                    editorOffsetChangedEventTarget: state.editorOffsetChangedEventTarget,
-                    panel,
-                });
+                    documentURIStr,
+                    {
+                        onPreviewOffsetChanged: (offset: number) => this.onPreviewOffsetChanged(documentURIStr, offset),
+                        initialCenterOffset: () => centerOffset(documentURIStr) ?? 0,
+                        editorOffsetChangedEventTarget: state.editorOffsetChangedEventTarget,
+                        panel,
+                    },
+                );
                 state.syncEnabled = true;
             }, 100);
         }

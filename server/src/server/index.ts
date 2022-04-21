@@ -25,6 +25,7 @@ import { getDefinitions } from "./definitions";
 import { getReferences } from "./references";
 import { getDocumentHighlights } from "./documentHighlights";
 import { getCodeLenses, getCodeLensResolve } from "./codeLenses";
+import { getDocumentLinks } from "./documentLinks";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedCache: Map<string, Parsed> = new Map();
@@ -55,6 +56,7 @@ let hasDefinitionCapability = false;
 let hasReferencesCapability = false;
 let hasDocumentHighlightCapability = false;
 let hasCodeLensCapability = false;
+let hasDocumentLinkCapability = false;
 
 interface ExampleSettings {
     maxNumberOfProblems: number;
@@ -141,6 +143,13 @@ export const main = (connection: _Connection) => {
         if (hasCodeLensCapability) {
             serverCapabilities.codeLensProvider = {
                 resolveProvider: true,
+            };
+        }
+
+        hasDocumentLinkCapability = !!(clientCapabilities.textDocument?.documentLink);
+        if (hasDocumentLinkCapability) {
+            serverCapabilities.documentLinkProvider = {
+                resolveProvider: false,
             };
         }
 
@@ -250,6 +259,16 @@ export const main = (connection: _Connection) => {
     connection.onCodeLensResolve(codeLens => {
         const retCodeLens = getCodeLensResolve(codeLens);
         return retCodeLens;
+    });
+
+    connection.onDocumentLinks(e => {
+        const document = documents.get(e.textDocument.uri);
+        if (document === undefined) {
+            return null;
+        }
+        const parsed = getParsed(document);
+        const documentLinks = getDocumentLinks(document, parsed);
+        return documentLinks;
     });
 
     connection.languages.semanticTokens.on((params) => {
