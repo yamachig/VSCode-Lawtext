@@ -14,7 +14,7 @@
     "main": "./client/out/bundle.js",
     "browser": "./client/out-browser/bundle.js",
     "scripts": {
-        "vscode:prepublish": "npm run build:prod && npm run build-browser:prod",
+        "vscode:prepublish": "npm run build:prod",
         "build:dev": "npx webpack --color --config ./webpack-configs/index.ts",
         "build:prod": "npx webpack --color --mode production --devtool hidden-source-map --config ./webpack-configs/index.ts",
         "watch": "npx webpack --color --watch --config ./webpack-configs/index.ts",
