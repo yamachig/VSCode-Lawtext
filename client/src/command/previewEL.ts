@@ -25,7 +25,6 @@ export class Broadcast<T> {
 }
 
 export interface PreviewELOptions {
-    context: vscode.ExtensionContext,
     el: EL,
     rawDocumentURI?: string,
     onPreviewOffsetChanged?: (offset: number) => void,
@@ -50,7 +49,9 @@ const getFigDataMap = (el: EL | string, convertFigSrc: (src: string) => string) 
 };
 
 export const previewEL = (options: PreviewELOptions) => {
-    const { context, el, rawDocumentURI, editorOffsetChangedEventTarget } = options;
+    const disposables: Set<vscode.Disposable> = new Set();
+
+    const { el, rawDocumentURI, editorOffsetChangedEventTarget } = options;
 
     const panel = options.panel ?? vscode.window.createWebviewPanel(
         "lawtextPreview",
@@ -61,6 +62,10 @@ export const previewEL = (options: PreviewELOptions) => {
             enableFindWidget: true,
         },
     );
+    panel.onDidDispose(() => {
+        disposables.forEach(d => d.dispose());
+        disposables.clear();
+    });
 
     const html = /*html*/`\
 <!DOCTYPE html>
@@ -121,7 +126,7 @@ ${previewerScript}
         options: previewerOptions,
     });
 
-    panel.webview.onDidReceiveMessage(
+    disposables.add(panel.webview.onDidReceiveMessage(
         message => {
             if (message.command === "openLink") {
                 const uri = vscode.Uri.parse(message.href);
@@ -131,10 +136,8 @@ ${previewerScript}
                     options.onPreviewOffsetChanged(message.offset);
                 }
             }
-        },
-        undefined,
-        context.subscriptions
-    );
+        }
+    ));
 
     if (editorOffsetChangedEventTarget) {
         const scrollHandler = (e: {offset: number}) => {
@@ -145,7 +148,7 @@ ${previewerScript}
             });
         };
         editorOffsetChangedEventTarget.add(scrollHandler);
-        context.subscriptions.push({
+        disposables.add({
             dispose: () => {
                 editorOffsetChangedEventTarget.remove(scrollHandler);
             }
