@@ -4,10 +4,25 @@ import { EL } from "lawtext/dist/src/node/el";
 import * as std from "lawtext/dist/src/law/std";
 import path from "path";
 import { pictMimeDict } from "lawtext/dist/src/util";
-import _previewerScript from "../previewer/out/bundle.js.txt";
+import previewerScript from "../previewer/out/bundle.js.txt";
 import { PreviewerOptions } from "../previewer/src/optionsInterface";
 
-const previewerScript = _previewerScript.replace(/<\/script>/g, "</ script>");
+const previewerHTML = /*html*/`\
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>${htmlCSS}</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+var exports = {};
+</script>
+<script src="data:text/javascript;base64,${Buffer.from(previewerScript).toString("base64")}"></script>
+</body>
+</html>
+`;
 
 export class Broadcast<T> {
     private _listeners: Set<(e: T) => void> = new Set();
@@ -67,24 +82,7 @@ export const previewEL = (options: PreviewELOptions) => {
         disposables.clear();
     });
 
-    const html = /*html*/`\
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<style>${htmlCSS}</style>
-</head>
-<body>
-<div id="root"></div>
-<script>
-var exports = {};
-${previewerScript}
-</script>
-</body>
-</html>
-`;
-
-    panel.webview.html = html;
+    panel.webview.html = previewerHTML;
 
     const els = [el.json(true, true)];
 
