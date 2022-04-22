@@ -12,7 +12,7 @@ export const activate = (context: vscode.ExtensionContext) => {
 
     context.subscriptions.push(vscode.commands.registerCommand("lawtext.showLawtextPreview", showLawtextPreview));
 
-    context.subscriptions.push(vscode.commands.registerCommand("lawtext.previewEL", previewEL));
+    context.subscriptions.push(vscode.commands.registerCommand("lawtext.previewEL", previewEL)); // TODO
 
 };
 

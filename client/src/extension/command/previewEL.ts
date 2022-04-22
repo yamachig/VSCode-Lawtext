@@ -40,11 +40,22 @@ export class Broadcast<T> {
 }
 
 export interface PreviewELOptions {
+    el: EL | JsonEL,
     onPreviewOffsetChanged?: (offset: number) => void,
     editorOffsetChangedEventTarget?: Broadcast<{offset: number}>,
     initialCenterOffset?: number | (() => number),
     panel?: vscode.WebviewPanel,
+    figDataMap?: Record<string, {url: string, type: string}>,
 }
+
+export const getFigDataMapWithDocument = (el: EL | string, rawDocumentURI: string) => {
+    const convertFigSrc = (src: string) => {
+        const documentURI = vscode.Uri.parse(rawDocumentURI);
+        const uri = vscode.Uri.joinPath(documentURI, "../", src);
+        return uri.toString();
+    };
+    return getFigDataMap(el, convertFigSrc);
+};
 
 const getFigDataMap = (el: EL | string, convertFigSrc: (src: string) => string) => {
     const figDataMap: Record<string, {url: string, type: string}> = {};
@@ -61,10 +72,10 @@ const getFigDataMap = (el: EL | string, convertFigSrc: (src: string) => string) 
     return figDataMap;
 };
 
-export const previewEL = (elOrJsonEL: EL | JsonEL, rawDocumentURI?: string, options: PreviewELOptions = {}) => {
+export const previewEL = async (options: PreviewELOptions) => {
     const disposables: Set<vscode.Disposable> = new Set();
 
-    const { editorOffsetChangedEventTarget } = options;
+    const { el: elOrJsonEL, editorOffsetChangedEventTarget } = options;
 
     const el = elOrJsonEL instanceof EL ? elOrJsonEL : loadEl(elOrJsonEL);
 
@@ -87,15 +98,15 @@ export const previewEL = (elOrJsonEL: EL | JsonEL, rawDocumentURI?: string, opti
     const els = [el.json(true, true)];
 
     const figDataMap: Record<string, {url: string, type: string}> = {};
-
-    if (rawDocumentURI !== undefined) {
-        const convertFigSrc = (src: string) => {
-            const documentURI = vscode.Uri.parse(rawDocumentURI);
-            const uri = vscode.Uri.joinPath(documentURI, "../", src);
-            const convertedUri = path.extname(src) === ".pdf" ? uri : panel.webview.asWebviewUri(uri);
-            return convertedUri.toString();
-        };
-        Object.assign(figDataMap, getFigDataMap(el, convertFigSrc));
+    for (const [src, { url: uriString, type }] of Object.entries(options.figDataMap ?? {})) {
+        const uri = vscode.Uri.parse(uriString);
+        let convertedURI: string;
+        if (uri.scheme === "file") {
+            convertedURI = type === "application/pdf" ? uriString : panel.webview.asWebviewUri(uri).toString();
+        } else {
+            convertedURI = uriString;
+        }
+        figDataMap[src] = { url: convertedURI.toString(), type };
     }
 
     const htmlOptions: PreviewerOptions["htmlOptions"] = {

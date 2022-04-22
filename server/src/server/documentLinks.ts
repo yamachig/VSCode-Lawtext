@@ -26,7 +26,6 @@ function *getDocumentLinksOfEL(document: TextDocument, el: EL | string): Iterabl
 }
 
 export const getDocumentLinks = (document: TextDocument, parsed: Parsed): DocumentLink[] => {
-    console.log("getDocumentLinks");
     const { law } = parsed;
 
     const links = [...getDocumentLinksOfEL(document, law)];

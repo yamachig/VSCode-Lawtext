@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
-import previewEL, { Broadcast } from "./command/previewEL";
+import previewEL, { Broadcast, getFigDataMapWithDocument } from "./command/previewEL";
 import { parse } from "lawtext/dist/src/parser/lawtext";
 import { analyze } from "lawtext/dist/src/analyzer";
 import { PreviewerOptions } from "../previewer/src/optionsInterface";
 import { throttle } from "lawtext/dist/src/util";
+import loaderContentProvider from "./loaderContentProvider";
 
 const centerOffset = (documentURIStr: string) => {
     const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentURIStr);
@@ -83,15 +84,26 @@ class SyncedPreviewsManager extends vscode.Disposable {
             };
             this.states.set(documentURIStr, state);
 
+            const figDataMap: Record<string, {url: string, type: string}> = {};
+
+            const pictURLCache = loaderContentProvider.pictURLCache.get(documentURIStr);
+            if (pictURLCache) {
+                for (const [key, value] of pictURLCache) {
+                    figDataMap[key] = value;
+                }
+            } else {
+                Object.assign(figDataMap, getFigDataMapWithDocument(el, documentURIStr));
+            }
+
             setTimeout(() => {
                 previewEL(
-                    el,
-                    documentURIStr,
                     {
+                        el,
                         onPreviewOffsetChanged: (offset: number) => this.onPreviewOffsetChanged(documentURIStr, offset),
                         initialCenterOffset: () => centerOffset(documentURIStr) ?? 0,
                         editorOffsetChangedEventTarget: state.editorOffsetChangedEventTarget,
                         panel,
+                        figDataMap,
                     },
                 );
                 state.syncEnabled = true;
