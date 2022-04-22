@@ -34,6 +34,7 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
             },
             fallback: {
                 "path": require.resolve("path-browserify"),
+                "buffer": require.resolve("buffer/"),
             },
         },
         module: {
@@ -46,6 +47,9 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
         },
 
         plugins: [
+            new webpack.ProvidePlugin({
+                Buffer: ["buffer", "Buffer"],
+            }),
             new WatchMessagePlugin(),
             new webpack.DefinePlugin({
                 process: { env: {} }

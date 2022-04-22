@@ -33,6 +33,7 @@
         "@typescript-eslint/eslint-plugin": "^5.20.0",
         "@typescript-eslint/parser": "^5.20.0",
         "@vscode/test-web": "^0.0.24",
+        "buffer": "^6.0.3",
         "eslint": "^8.13.0",
         "eslint-plugin-prefer-arrow": "^1.2.3",
         "eslint-plugin-react": "^7.29.4",
