@@ -129,7 +129,8 @@
                     "ja": true
                 },
                 "editor.bracketPairColorization.enabled": true,
-                "editor.definitionLinkOpensInPeek": true
+                "editor.definitionLinkOpensInPeek": true,
+                "editor.wordWrap": "on"
             },
             "editor.semanticTokenColorCustomizations": {
                 "rules": {
