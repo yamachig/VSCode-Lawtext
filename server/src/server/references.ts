@@ -1,4 +1,4 @@
-import { ____VarRef } from "lawtext/dist/src/analyzer";
+import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
 import {
     Location,
     Position,
@@ -19,21 +19,22 @@ export const getReferences = (document: TextDocument, parsed: Parsed, position: 
 
     for (const varRef of variableReferences) {
         if (varRef.range && varRef.range[0] <= offset && offset < varRef.range[1]) {
-            if (varRef.declaration.nameRange) {
+            const nameRange = declarations.get(varRef.attr.declarationID).nameRange;
+            if (nameRange) {
                 locations.push({
                     uri: document.uri,
                     range: {
-                        start: document.positionAt(varRef.declaration.nameRange[0]),
-                        end: document.positionAt(varRef.declaration.nameRange[1]),
+                        start: document.positionAt(nameRange[0]),
+                        end: document.positionAt(nameRange[1]),
                     },
                 });
             }
-            varRefs.push(...variableReferences.filter(r => r.declaration === varRef.declaration));
+            varRefs.push(...variableReferences.filter(r => r.attr.declarationID === varRef.attr.declarationID));
             break;
         }
     }
 
-    for (const decl of declarations.declarations) {
+    for (const decl of declarations.db.values()) {
         if (decl.nameRange && decl.nameRange[0] <= offset && offset < decl.nameRange[1]) {
             if (decl.nameRange) {
                 locations.push({
@@ -44,7 +45,7 @@ export const getReferences = (document: TextDocument, parsed: Parsed, position: 
                     },
                 });
             }
-            varRefs.push(...variableReferences.filter(r => r.declaration === decl));
+            varRefs.push(...variableReferences.filter(r => r.attr.declarationID === decl.attr.declarationID));
             break;
         }
     }

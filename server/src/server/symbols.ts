@@ -26,7 +26,7 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
         const lawNumInParentheses = (
             lawNum?.text
                 ? (
-                    /^[(（]/.exec(lawNum.text)
+                    /^[(（]/.exec(lawNum.text())
                         ? lawNum.text
                         : `（${lawNum.text}）`
                 )
@@ -49,7 +49,7 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
     } else if (isEnactStatement(el)) {
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, (el.range && [el.range[0], el.range[0]]));
-        const displayName = `制定文「${el.text.slice(0, 10)}${el.text.length > 10 ? "…" : ""}」`;
+        const displayName = `制定文「${el.text().slice(0, 10)}${el.text.length > 10 ? "…" : ""}」`;
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,
@@ -61,7 +61,7 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
         const title = el.children.find(isTOCLabel);
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, title?.range ?? (el.range && [el.range[0], el.range[0]]));
-        const displayName = title?.text ?? "目次";
+        const displayName = title?.text() ?? "目次";
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,
@@ -96,7 +96,7 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
         const title = (el.children as (typeof el.children)[number][]).find(isArticleGroupTitle);
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, title?.range ?? (el.range && [el.range[0], el.range[0]]));
-        const displayName = title?.text ?? "";
+        const displayName = title?.text() ?? "";
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,

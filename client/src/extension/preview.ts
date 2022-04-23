@@ -1,12 +1,14 @@
 import * as vscode from "vscode";
 import htmlCSS from "lawtext/dist/src/renderer/rules/htmlCSS";
-import { EL, JsonEL, loadEl } from "lawtext/dist/src/node/el";
+import { EL } from "lawtext/dist/src/node/el";
+import { loadEL } from "lawtext/dist/src/node/el/loadEL";
 import * as std from "lawtext/dist/src/law/std";
 import path from "path";
 import { pictMimeDict } from "lawtext/dist/src/util";
 import previewerScript from "../previewer/out/bundle.js.txt";
 import { PreviewerOptions } from "../previewer/src/optionsInterface";
 import loaderContentProvider from "./loaderContentProvider";
+import { JsonEL } from "lawtext/dist/src/node/el/jsonEL";
 
 const previewerHTML = /*html*/`\
 <!DOCTYPE html>
@@ -87,7 +89,7 @@ export const preview = async (options: PreviewELOptions) => {
 
     const { el: elOrJsonEL, editorOffsetChangedEventTarget } = options;
 
-    const el = elOrJsonEL instanceof EL ? elOrJsonEL : loadEl(elOrJsonEL);
+    const el = elOrJsonEL instanceof EL ? elOrJsonEL : loadEL(elOrJsonEL);
 
     const panel = options.panel ?? vscode.window.createWebviewPanel(
         "lawtextPreview",

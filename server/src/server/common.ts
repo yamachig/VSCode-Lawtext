@@ -1,5 +1,6 @@
-import { Declarations, ____VarRef } from "lawtext/dist/src/analyzer";
+import { Declarations } from "lawtext/dist/src/analyzer/common/declarations";
 import { Law } from "lawtext/dist/src/law/std";
+import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
 import { ErrorMessage } from "lawtext/dist/src/parser/cst/error";
 import { VirtualLine } from "lawtext/dist/src/parser/std/virtualLine";
 import { Range } from "vscode-languageserver";

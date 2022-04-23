@@ -6,7 +6,8 @@ import * as std from "lawtext/dist/src/law/std";
 import { PreviewerOptions } from "./optionsInterface";
 import { omit, throttle } from "lawtext/dist/src/util";
 import { HTMLOptions } from "lawtext/dist/src/renderer/common/html";
-import { EL, loadEl } from "lawtext/dist/src/node/el";
+import { EL } from "lawtext/dist/src/node/el";
+import { loadEL } from "lawtext/dist/src/node/el/loadEL";
 import { ActionCounter, getCenterOffset, scrollToOffset } from "./offset";
 
 
@@ -51,7 +52,7 @@ const toPreviewerState = (stateJSON: Partial<WebviewState>): Partial<PreviewerSt
         (getFigData as any).figDataMap = stateJSON.htmlOptions.figDataMap;
     }
     const ret: Partial<PreviewerState> = {};
-    if (stateJSON.els) ret.els = stateJSON.els.map(loadEl);
+    if (stateJSON.els) ret.els = stateJSON.els.map(loadEL);
     ret.htmlOptions = { ...htmlOptions, ...(getFigData ? { getFigData } : {}) };
     return ret;
 };

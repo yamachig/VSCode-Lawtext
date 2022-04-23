@@ -6,9 +6,10 @@ import {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { EL, JsonEL } from "lawtext/dist/src/node/el";
+import { EL } from "lawtext/dist/src/node/el";
 import * as std from "lawtext/dist/src/law/std";
 import { Parsed, toRange } from "./common";
+import { JsonEL } from "lawtext/dist/src/node/el/jsonEL";
 
 export type PreviewJsonELCodeLens = Omit<CodeLens, "data"> & {
     data: {
