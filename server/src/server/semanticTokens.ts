@@ -9,6 +9,7 @@ import * as std from "lawtext/dist/src/law/std";
 import { Parsed } from "./common";
 import { ____Declaration } from "lawtext/dist/src/node/el/controls/declaration";
 import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
+import { __PContent, ____PF } from "lawtext/dist/src/node/el/controls";
 
 export const tokenTypes: string[] = [];
 export const tokenModifiers: string[] = [];
@@ -43,26 +44,36 @@ const boldModifier = ["defaultLibrary", "declaration", "definition"];
 function *tokensOfEL(el: std.StdEL | std.__EL | string): Iterable<[[number, number], string, string[]]> {
     if (typeof el === "string") return;
     let skipChildren = false;
-    if (std.isControl(el)) {
-        if (
-            (el.tag === "__PContent")
+
+    if (
+        (el instanceof __PContent)
             && (el.attr.type === "square")
             && !el.children.some(c => c instanceof ____Declaration)
-        ) {
-            if (el.range) yield [el.range, "string", []];
-        } else if (el instanceof ____Declaration) {
+    ) {
+        if (el.range) yield [el.range, "string", []];
+
+    } else if (el instanceof ____Declaration) {
+        const nameRange = el.range;
+        if (nameRange) yield [nameRange, "variable", boldModifier];
+
+    } else if (el instanceof ____VarRef) {
+        const nameRange = el.range;
+        if (nameRange) yield [nameRange, "variable", []];
+
+    } else if (el instanceof ____PF) {
+        if (el.attr.locatedContainerID) {
             const nameRange = el.range;
-            if (nameRange) yield [nameRange, "variable", boldModifier];
-        } else if (el instanceof ____VarRef) {
-            const nameRange = el.range;
-            if (nameRange) yield [nameRange, "variable", []];
+            if (nameRange) yield [nameRange, "namespace", []];
         }
+
     } else if (std.isQuoteStruct(el)) {
         if (el.range) yield [el.range, "regexp", []];
         skipChildren = true;
+
     } else if (std.isArticleGroupTitle(el) || std.isSupplProvisionLabel(el) || std.isLawTitle(el) || std.isLawNum(el)) {
         if (el.range) yield [el.range, "namespace", boldModifier];
         skipChildren = true;
+
     } else if (std.isTOC(el)) {
         for (const child of el.children) {
             if (child.range) {
@@ -71,16 +82,20 @@ function *tokensOfEL(el: std.StdEL | std.__EL | string): Iterable<[[number, numb
             }
         }
         skipChildren = true;
+
     } else if (std.isArticleTitle(el) || std.isParagraphItemTitle(el) || std.isAppdxItemTitle(el) || std.isSupplProvisionAppdxItemTitle(el) || std.isRemarksLabel(el) || std.isNoteLikeStructTitle(el) || std.isTableStructTitle(el) || std.isFigStructTitle(el) || std.isArithFormulaNum(el)) {
-        if (el.range) yield [el.range, "enumMember", boldModifier];
+        if (el.range) yield [el.range, "namespace", boldModifier];
         skipChildren = true;
+
     } else if (std.isRelatedArticleNum(el) || std.isArticleCaption(el) || std.isParagraphCaption(el)) {
-        if (el.range) yield [el.range, "enumMember", []];
+        if (el.range) yield [el.range, "namespace", []];
         // skipChildren = true;
+
     } else if (std.isFig(el)) {
         if (el.range) yield [el.range, "event", []];
         skipChildren = true;
     }
+
     if (!skipChildren) {
         for (const child of el.children) {
             yield *tokensOfEL(child as std.StdEL | std.__EL | string);

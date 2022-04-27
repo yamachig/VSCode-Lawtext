@@ -34,14 +34,13 @@ const getParsed = (textDocument: TextDocument): Parsed => {
     if (cached) return cached;
 
     const { value: law, errors: parseErrors, virtualLines } = parse(textDocument.getText());
-    const { declarations, variableReferences } = analyze(law);
+    const analysis = analyze(law);
 
     const parsed: Parsed = {
         law,
         parseErrors,
         virtualLines,
-        declarations,
-        variableReferences,
+        ...analysis,
     };
     parsedCache.set(textDocument.uri, parsed);
     return parsed;
