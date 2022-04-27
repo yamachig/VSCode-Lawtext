@@ -8,7 +8,7 @@ import {
 } from "vscode-languageserver-textdocument";
 
 import { EL } from "lawtext/dist/src/node/el";
-import { AppdxItemTitle, isAppdxItem, isAppdxItemTitle, isArticle, isArticleCaption, isArticleGroup, isArticleGroupTitle, isArticleTitle, isEnactStatement, isLaw, isLawBody, isLawNum, isLawTitle, isMainProvision, isParagraphCaption, isParagraphItem, isParagraphItemTitle, isPreamble, isSupplProvision, isSupplProvisionAppdxItem, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTOC, isTOCLabel, SupplProvisionAppdxItemTitle } from "lawtext/dist/src/law/std";
+import * as std from "lawtext/dist/src/law/std";
 import { Parsed, toRange } from "./common";
 
 export const getSymbols = (document: TextDocument, parsed: Parsed): DocumentSymbol[] => {
@@ -17,22 +17,22 @@ export const getSymbols = (document: TextDocument, parsed: Parsed): DocumentSymb
 
 function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined): Iterable<DocumentSymbol> {
     if (typeof el === "string" || !el) return;
-    if (isLaw(el)) {
-        const lawNum = el.children.find(isLawNum);
-        const lawBody = el.children.find(isLawBody);
-        const lawTitle = lawBody?.children.find(isLawTitle);
+    if (std.isLaw(el)) {
+        const lawNum = el.children.find(std.isLawNum);
+        const lawBody = el.children.find(std.isLawBody);
+        const lawTitle = lawBody?.children.find(std.isLawTitle);
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, lawTitle?.range ?? lawNum?.range ?? (el.range && [el.range[0], el.range[0]]));
         const lawNumInParentheses = (
-            lawNum?.text
+            lawNum?.text()
                 ? (
                     /^[(（]/.exec(lawNum.text())
-                        ? lawNum.text
-                        : `（${lawNum.text}）`
+                        ? lawNum.text()
+                        : `（${lawNum.text()}）`
                 )
                 : ""
         );
-        const displayName = (lawTitle || lawNum) ? `${lawTitle?.text ?? ""}${lawNumInParentheses}` : "";
+        const displayName = (lawTitle || lawNum) ? `${lawTitle?.text() ?? ""}${lawNumInParentheses}` : "";
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,
@@ -41,15 +41,15 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             selectionRange,
             children: [...symbolsOfEL(document, lawBody)]
         };
-    } else if (isLawBody(el)) {
+    } else if (std.isLawBody(el)) {
         for (const child of el.children) {
-            if (isLawTitle(child)) continue;
+            if (std.isLawTitle(child)) continue;
             yield *symbolsOfEL(document, child);
         }
-    } else if (isEnactStatement(el)) {
+    } else if (std.isEnactStatement(el)) {
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, (el.range && [el.range[0], el.range[0]]));
-        const displayName = `制定文「${el.text().slice(0, 10)}${el.text.length > 10 ? "…" : ""}」`;
+        const displayName = `制定文「${el.text().slice(0, 10)}${el.text().length > 10 ? "…" : ""}」`;
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,
@@ -57,8 +57,8 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             range,
             selectionRange,
         };
-    } else if (isTOC(el)) {
-        const title = el.children.find(isTOCLabel);
+    } else if (std.isTOC(el)) {
+        const title = el.children.find(std.isTOCLabel);
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, title?.range ?? (el.range && [el.range[0], el.range[0]]));
         const displayName = title?.text() ?? "目次";
@@ -69,7 +69,7 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             range,
             selectionRange,
         };
-    } else if (isPreamble(el)) {
+    } else if (std.isPreamble(el)) {
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, (el.range && [el.range[0], el.range[0]]));
         const displayName = "前文";
@@ -80,7 +80,7 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             range,
             selectionRange,
         };
-    } else if (isMainProvision(el)) {
+    } else if (std.isMainProvision(el)) {
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, (el.range && [el.range[0], el.range[0]]));
         const displayName = "本則";
@@ -92,8 +92,8 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             selectionRange,
             children: el.children.map(c => [...symbolsOfEL(document, c)]).flat(),
         };
-    } else if (isArticleGroup(el)) {
-        const title = (el.children as (typeof el.children)[number][]).find(isArticleGroupTitle);
+    } else if (std.isArticleGroup(el)) {
+        const title = (el.children as (typeof el.children)[number][]).find(std.isArticleGroupTitle);
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, title?.range ?? (el.range && [el.range[0], el.range[0]]));
         const displayName = title?.text() ?? "";
@@ -105,13 +105,13 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             selectionRange,
             children: (
                 (el.children as (typeof el.children)[number][])
-                    .filter(c => !isArticleGroupTitle(c))
+                    .filter(c => !std.isArticleGroupTitle(c))
                     .map(c => [...symbolsOfEL(document, c)])
                     .flat()
             ),
         };
-    } else if (isSupplProvision(el)) {
-        const title = el.children.find(isSupplProvisionLabel);
+    } else if (std.isSupplProvision(el)) {
+        const title = el.children.find(std.isSupplProvisionLabel);
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, title?.range ?? (el.range && [el.range[0], el.range[0]]));
         const amendLawNumInParentheses = (
@@ -123,7 +123,7 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
                 )
                 : ""
         );
-        const displayName = `${title?.text ?? "附則"}${amendLawNumInParentheses}${el.attr.Extract ? "　抄" : ""}`;
+        const displayName = `${title?.text() ?? "附則"}${amendLawNumInParentheses}${el.attr.Extract ? "　抄" : ""}`;
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,
@@ -132,17 +132,17 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             selectionRange,
             children: (
                 el.children
-                    .filter(c => !isSupplProvisionLabel(c))
+                    .filter(c => !std.isSupplProvisionLabel(c))
                     .map(c => [...symbolsOfEL(document, c)])
                     .flat()
             ),
         };
-    } else if (isArticle(el)) {
-        const title = (el.children as (typeof el.children)[number][]).find(isArticleTitle);
-        const caption = (el.children as (typeof el.children)[number][]).find(isArticleCaption);
+    } else if (std.isArticle(el)) {
+        const title = (el.children as (typeof el.children)[number][]).find(std.isArticleTitle);
+        const caption = (el.children as (typeof el.children)[number][]).find(std.isArticleCaption);
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, title?.range ?? (el.range && [el.range[0], el.range[0]]));
-        const displayName = `${title?.text ?? ""}${caption?.text ?? ""}`;
+        const displayName = `${title?.text() ?? ""}${caption?.text() ?? ""}`;
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,
@@ -156,12 +156,12 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             //         .flat()
             // ),
         };
-    } else if (isParagraphItem(el)) {
-        const title = (el.children as (typeof el.children)[number][]).find(isParagraphItemTitle);
-        const caption = (el.children as (typeof el.children)[number][]).find(isParagraphCaption);
+    } else if (std.isParagraphItem(el)) {
+        const title = (el.children as (typeof el.children)[number][]).find(std.isParagraphItemTitle);
+        const caption = (el.children as (typeof el.children)[number][]).find(std.isParagraphCaption);
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, title?.range ?? (el.range && [el.range[0], el.range[0]]));
-        const displayName = `${title?.text ?? ""}${caption?.text ?? ""}`;
+        const displayName = `${title?.text() ?? ""}${caption?.text() ?? ""}`;
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,
@@ -175,11 +175,11 @@ function *symbolsOfEL(document: TextDocument, el: EL | string | null | undefined
             //         .flat()
             // ),
         };
-    } else if (isAppdxItem(el) || isSupplProvisionAppdxItem(el)) {
-        const title = (el.children as (typeof el.children)[number][]).find(c => isAppdxItemTitle(c) || isSupplProvisionAppdxItemTitle(c)) as AppdxItemTitle | SupplProvisionAppdxItemTitle | undefined;
+    } else if (std.isAppdxItem(el) || std.isSupplProvisionAppdxItem(el)) {
+        const title = (el.children as (typeof el.children)[number][]).find(c => std.isAppdxItemTitle(c) || std.isSupplProvisionAppdxItemTitle(c)) as std.AppdxItemTitle | std.SupplProvisionAppdxItemTitle | undefined;
         const range = toRange(document, el.range);
         const selectionRange = toRange(document, title?.range ?? (el.range && [el.range[0], el.range[0]]));
-        const displayName = `${title?.text ?? ""}`;
+        const displayName = `${title?.text() ?? ""}`;
         if (range && selectionRange) yield {
             name: displayName || `<${el.tag}>`,
             detail: displayName ? `<${el.tag}>` : undefined,

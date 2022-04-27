@@ -82,8 +82,8 @@ export const main = (connection: _Connection) => {
             textDocumentSync: TextDocumentSyncKind.Incremental,
         };
 
-        hasConfigurationCapability = !!(
-            clientCapabilities.workspace && !!clientCapabilities.workspace.configuration
+        hasConfigurationCapability = Boolean(
+            clientCapabilities.workspace && Boolean(clientCapabilities.workspace.configuration)
         );
         if (hasConfigurationCapability) {
             onInitializedHandlers.push(() => {
@@ -91,8 +91,8 @@ export const main = (connection: _Connection) => {
             });
         }
 
-        hasWorkspaceFolderCapability = !!(
-            clientCapabilities.workspace && !!clientCapabilities.workspace.workspaceFolders
+        hasWorkspaceFolderCapability = Boolean(
+            clientCapabilities.workspace && Boolean(clientCapabilities.workspace.workspaceFolders)
         );
         if (hasWorkspaceFolderCapability) {
             serverCapabilities.workspace = {
@@ -112,7 +112,7 @@ export const main = (connection: _Connection) => {
             tokenTypes.push(...semanticTokensClientCapability.tokenTypes);
             tokenModifiers.push(...semanticTokensClientCapability.tokenModifiers);
         }
-        hasSemanticTokensCapability = !!semanticTokensClientCapability;
+        hasSemanticTokensCapability = Boolean(semanticTokensClientCapability);
         if (hasSemanticTokensCapability) {
             serverCapabilities.semanticTokensProvider = {
                 documentSelector: [{ language: "lawtext" }],
@@ -124,29 +124,29 @@ export const main = (connection: _Connection) => {
             };
         }
 
-        hasHoverCapability = !!(clientCapabilities.textDocument?.hover);
+        hasHoverCapability = Boolean(clientCapabilities.textDocument?.hover);
         serverCapabilities.hoverProvider = hasHoverCapability;
 
-        hasDocumentSymbolCapability = !!(clientCapabilities.textDocument?.documentSymbol);
+        hasDocumentSymbolCapability = Boolean(clientCapabilities.textDocument?.documentSymbol);
         serverCapabilities.documentSymbolProvider = hasDocumentSymbolCapability;
 
-        hasDefinitionCapability = !!(clientCapabilities.textDocument?.definition);
+        hasDefinitionCapability = Boolean(clientCapabilities.textDocument?.definition);
         serverCapabilities.definitionProvider = hasDefinitionCapability;
 
-        hasReferencesCapability = !!(clientCapabilities.textDocument?.references);
+        hasReferencesCapability = Boolean(clientCapabilities.textDocument?.references);
         serverCapabilities.referencesProvider = hasReferencesCapability;
 
-        hasDocumentHighlightCapability = !!(clientCapabilities.textDocument?.documentHighlight);
+        hasDocumentHighlightCapability = Boolean(clientCapabilities.textDocument?.documentHighlight);
         serverCapabilities.documentHighlightProvider = hasDocumentHighlightCapability;
 
-        hasCodeLensCapability = !!(clientCapabilities.textDocument?.codeLens);
+        hasCodeLensCapability = Boolean(clientCapabilities.textDocument?.codeLens);
         if (hasCodeLensCapability) {
             serverCapabilities.codeLensProvider = {
                 resolveProvider: true,
             };
         }
 
-        hasDocumentLinkCapability = !!(clientCapabilities.textDocument?.documentLink);
+        hasDocumentLinkCapability = Boolean(clientCapabilities.textDocument?.documentLink);
         if (hasDocumentLinkCapability) {
             serverCapabilities.documentLinkProvider = {
                 resolveProvider: false,

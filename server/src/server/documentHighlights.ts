@@ -19,7 +19,7 @@ export const getDocumentHighlights = (document: TextDocument, parsed: Parsed, po
 
     for (const varRef of variableReferences) {
         if (varRef.range && varRef.range[0] <= offset && offset < varRef.range[1]) {
-            const nameRange = declarations.get(varRef.attr.declarationID).nameRange;
+            const nameRange = declarations.get(varRef.attr.declarationID).range;
             if (nameRange) {
                 highlights.push({
                     range: {
@@ -34,12 +34,12 @@ export const getDocumentHighlights = (document: TextDocument, parsed: Parsed, po
     }
 
     for (const decl of declarations.db.values()) {
-        if (decl.nameRange && decl.nameRange[0] <= offset && offset < decl.nameRange[1]) {
-            if (decl.nameRange) {
+        if (decl.range && decl.range[0] <= offset && offset < decl.range[1]) {
+            if (decl.range) {
                 highlights.push({
                     range: {
-                        start: document.positionAt(decl.nameRange[0]),
-                        end: document.positionAt(decl.nameRange[1]),
+                        start: document.positionAt(decl.range[0]),
+                        end: document.positionAt(decl.range[1]),
                     },
                 });
             }

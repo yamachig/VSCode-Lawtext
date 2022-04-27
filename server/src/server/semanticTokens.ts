@@ -5,7 +5,7 @@ import {
 import { LineType } from "lawtext/dist/src/node/cst/line";
 import { VirtualOnlyLineType } from "lawtext/dist/src/parser/std/virtualLine";
 import { assertNever } from "lawtext/dist/src/util";
-import { isAppdxItemTitle, isArithFormulaNum, isArticleCaption, isArticleGroupTitle, isArticleTitle, isControl, isFig, isFigStructTitle, isLawNum, isLawTitle, isNoteLikeStructTitle, isParagraphCaption, isParagraphItemTitle, isRelatedArticleNum, isRemarksLabel, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel, isTableStructTitle, isTOC, isTOCLabel, StdEL, __EL } from "lawtext/dist/src/law/std";
+import * as std from "lawtext/dist/src/law/std";
 import { Parsed } from "./common";
 import { ____Declaration } from "lawtext/dist/src/node/el/controls/declaration";
 import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
@@ -40,45 +40,50 @@ export function *buildSampleTokens(document: TextDocument) {
 
 const boldModifier = ["defaultLibrary", "declaration", "definition"];
 
-function *tokensOfEL(el: StdEL | __EL | string): Iterable<[[number, number], string, string[]]> {
+function *tokensOfEL(el: std.StdEL | std.__EL | string): Iterable<[[number, number], string, string[]]> {
     if (typeof el === "string") return;
     let skipChildren = false;
-    if (isControl(el)) {
-        if (el.tag === "__PContent") {
-            if (el.attr.type === "square") {
-                if (el.range) yield [el.range, "string", []];
-            }
+    if (std.isControl(el)) {
+        if (
+            (el.tag === "__PContent")
+            && (el.attr.type === "square")
+            && !el.children.some(c => c instanceof ____Declaration)
+        ) {
+            if (el.range) yield [el.range, "string", []];
         } else if (el instanceof ____Declaration) {
-            const nameRange = el.nameRange;
+            const nameRange = el.range;
             if (nameRange) yield [nameRange, "variable", boldModifier];
         } else if (el instanceof ____VarRef) {
             const nameRange = el.range;
             if (nameRange) yield [nameRange, "variable", []];
         }
-    } else if (isArticleGroupTitle(el) || isSupplProvisionLabel(el) || isLawTitle(el) || isLawNum(el)) {
+    } else if (std.isQuoteStruct(el)) {
+        if (el.range) yield [el.range, "regexp", []];
+        skipChildren = true;
+    } else if (std.isArticleGroupTitle(el) || std.isSupplProvisionLabel(el) || std.isLawTitle(el) || std.isLawNum(el)) {
         if (el.range) yield [el.range, "namespace", boldModifier];
         skipChildren = true;
-    } else if (isTOC(el)) {
+    } else if (std.isTOC(el)) {
         for (const child of el.children) {
             if (child.range) {
-                if (isTOCLabel(child)) yield [child.range, "namespace", boldModifier];
+                if (std.isTOCLabel(child)) yield [child.range, "namespace", boldModifier];
                 else yield [child.range, "namespace", []];
             }
         }
         skipChildren = true;
-    } else if (isArticleTitle(el) || isParagraphItemTitle(el) || isAppdxItemTitle(el) || isSupplProvisionAppdxItemTitle(el) || isRemarksLabel(el) || isNoteLikeStructTitle(el) || isTableStructTitle(el) || isFigStructTitle(el) || isArithFormulaNum(el)) {
+    } else if (std.isArticleTitle(el) || std.isParagraphItemTitle(el) || std.isAppdxItemTitle(el) || std.isSupplProvisionAppdxItemTitle(el) || std.isRemarksLabel(el) || std.isNoteLikeStructTitle(el) || std.isTableStructTitle(el) || std.isFigStructTitle(el) || std.isArithFormulaNum(el)) {
         if (el.range) yield [el.range, "enumMember", boldModifier];
         skipChildren = true;
-    } else if (isRelatedArticleNum(el) || isArticleCaption(el) || isParagraphCaption(el)) {
+    } else if (std.isRelatedArticleNum(el) || std.isArticleCaption(el) || std.isParagraphCaption(el)) {
         if (el.range) yield [el.range, "enumMember", []];
         // skipChildren = true;
-    } else if (isFig(el)) {
+    } else if (std.isFig(el)) {
         if (el.range) yield [el.range, "event", []];
         skipChildren = true;
     }
     if (!skipChildren) {
         for (const child of el.children) {
-            yield *tokensOfEL(child as StdEL | __EL | string);
+            yield *tokensOfEL(child as std.StdEL | std.__EL | string);
         }
     }
 }

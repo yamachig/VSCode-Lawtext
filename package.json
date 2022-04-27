@@ -22,7 +22,7 @@
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
-        "lawtext": "^0.1.10"
+        "lawtext": "^0.1.12"
     },
     "devDependencies": {
         "@types/node": "^17.0.25",

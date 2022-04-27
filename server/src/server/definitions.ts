@@ -16,7 +16,7 @@ export const getDefinitions = (document: TextDocument, parsed: Parsed, position:
 
     for (const varRef of variableReferences) {
         const declaration = parsed.declarations.get(varRef.attr.declarationID);
-        if (varRef.range && declaration.range && declaration.nameRange && varRef.range[0] <= offset && offset < varRef.range[1]) {
+        if (varRef.range && declaration.range && declaration.range && varRef.range[0] <= offset && offset < varRef.range[1]) {
             links.push({
                 targetUri: document.uri,
                 targetRange: {
@@ -28,8 +28,8 @@ export const getDefinitions = (document: TextDocument, parsed: Parsed, position:
                     end: document.positionAt(varRef.range[1]),
                 },
                 targetSelectionRange: {
-                    start: document.positionAt(declaration.nameRange[0]),
-                    end: document.positionAt(declaration.nameRange[1]),
+                    start: document.positionAt(declaration.range[0]),
+                    end: document.positionAt(declaration.range[1]),
                 },
             });
         }

@@ -17,7 +17,7 @@ function *getDocumentLinksOfEL(document: TextDocument, el: EL | string): Iterabl
                 start: document.positionAt(el.range[0]),
                 end: document.positionAt(el.range[1]),
             },
-            target: `lawtext:/elaws/lawnum/${el.text}.law.txt`,
+            target: `lawtext:/elaws/lawnum/${el.text()}.law.txt`,
         };
     }
     for (const child of el.children) {
