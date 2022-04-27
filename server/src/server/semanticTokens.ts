@@ -61,7 +61,7 @@ function *tokensOfEL(el: std.StdEL | std.__EL | string): Iterable<[[number, numb
         if (nameRange) yield [nameRange, "variable", []];
 
     } else if (el instanceof ____PF) {
-        if (el.attr.locatedContainerID) {
+        if (el.targetContainerIDs.length > 0) {
             const nameRange = el.range;
             if (nameRange) yield [nameRange, "namespace", []];
         }

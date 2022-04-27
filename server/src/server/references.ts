@@ -72,19 +72,21 @@ export const getReferences = (document: TextDocument, parsed: Parsed, position: 
     const allFragments = pointerRangesList.map(l => l.ranges()).flat().map(r => r.pointers()).flat().map(p => p.fragments()).flat();
 
     for (const fragment of allFragments) {
-        if (!fragment.range || !fragment.attr.locatedContainerID) continue;
+        if (!fragment.range) continue;
         if (!(fragment.range[0] <= offset && offset < fragment.range[1])) continue;
-        const container = containers.get(fragment.attr.locatedContainerID);
-        if (!container || !container.el.range) continue;
-        locations.push({
-            uri: document.uri,
-            range: {
-                start: document.positionAt(container.el.range[0]),
-                end: document.positionAt(container.el.range[1]),
-            },
-        });
-        for (const f of allFragments.filter(r => r.attr.locatedContainerID === fragment.attr.locatedContainerID)) {
-            fragments.add(f);
+        for (const containerID of fragment.targetContainerIDs){
+            const container = containers.get(containerID);
+            if (!container || !container.el.range) continue;
+            locations.push({
+                uri: document.uri,
+                range: {
+                    start: document.positionAt(container.el.range[0]),
+                    end: document.positionAt(container.el.range[1]),
+                },
+            });
+            for (const f of allFragments.filter(r => r.attr.targetContainerIDs?.includes(containerID))) {
+                fragments.add(f);
+            }
         }
         break;
     }
@@ -123,7 +125,7 @@ export const getReferences = (document: TextDocument, parsed: Parsed, position: 
                         end: document.positionAt(containerTitle.range[1]),
                     },
                 });
-                for (const f of allFragments.filter(r => r.attr.locatedContainerID === container.containerID)) {
+                for (const f of allFragments.filter(r => r.attr.targetContainerIDs?.includes(container.containerID))) {
                     fragments.add(f);
                 }
             }
