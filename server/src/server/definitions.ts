@@ -37,7 +37,7 @@ export const getDefinitions = (document: TextDocument, parsed: Parsed, position:
 
     for (const fragment of pointerRangesList.map(l => l.ranges()).flat().map(r => r.pointers()).flat().map(p => p.fragments()).flat()) {
         if (!fragment.range) continue;
-        for (const containerID of fragment.targetContainerIDs.slice(-1)) {
+        for (const containerID of fragment.targetContainerIDs) {
             const container = containers.get(containerID);
             if (!container || !container.el.range) continue;
             if (!(fragment.range[0] <= offset && offset < fragment.range[1])) continue;
