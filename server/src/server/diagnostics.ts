@@ -18,8 +18,8 @@ export const getDiagnostics = (textDocument: TextDocument, parsed: Parsed) => {
         const diagnostic: Diagnostic = {
             severity: DiagnosticSeverity.Error,
             range: {
-                start: textDocument.positionAt(error.location[0].offset),
-                end: textDocument.positionAt(error.location[1].offset),
+                start: textDocument.positionAt(error.range[0]),
+                end: textDocument.positionAt(error.range[1]),
             },
             message: error.message,
             source: "Lawtext"
