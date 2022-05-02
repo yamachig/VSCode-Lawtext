@@ -9,12 +9,12 @@ import {
 
 import { Parsed } from "./common";
 
-
+const showAnalyzeErrors = false;
 export const getDiagnostics = (textDocument: TextDocument, parsed: Parsed) => {
-    const { parseErrors: errors } = parsed;
+    const { parseErrors, errors: analyzeErrors } = parsed;
 
     const diagnostics: Diagnostic[] = [];
-    for (const error of errors) {
+    for (const error of [...parseErrors, ...(showAnalyzeErrors ? analyzeErrors : [])]) {
         const diagnostic: Diagnostic = {
             severity: DiagnosticSeverity.Error,
             range: {
