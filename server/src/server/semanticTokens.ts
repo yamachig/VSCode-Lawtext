@@ -9,7 +9,7 @@ import * as std from "lawtext/dist/src/law/std";
 import { Parsed } from "./common";
 import { ____Declaration } from "lawtext/dist/src/node/el/controls/declaration";
 import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
-import { __PContent, ____PF } from "lawtext/dist/src/node/el/controls";
+import { __PContent } from "lawtext/dist/src/node/el/controls";
 
 export const tokenTypes: string[] = [];
 export const tokenModifiers: string[] = [];
@@ -60,12 +60,6 @@ function *tokensOfEL(el: std.StdEL | std.__EL | string): Iterable<[[number, numb
         const nameRange = el.range;
         if (nameRange) yield [nameRange, "variable", []];
 
-    } else if (el instanceof ____PF) {
-        if (el.targetContainerIDs.length > 0) {
-            const nameRange = el.range;
-            if (nameRange) yield [nameRange, "namespace", []];
-        }
-
     } else if (std.isQuoteStruct(el)) {
         if (el.range) yield [el.range, "regexp", []];
         skipChildren = true;
@@ -103,6 +97,15 @@ function *tokensOfEL(el: std.StdEL | std.__EL | string): Iterable<[[number, numb
     }
 }
 
+function *tokensOfPointers(parsed: Parsed): Iterable<[[number, number], string, string[]]> {
+    for (const pointerEnv of parsed.pointerEnvByEL.values()) {
+        if (!pointerEnv.located || pointerEnv.located.type !== "internal") continue;
+        for (const { fragment } of pointerEnv.located.fragments) {
+            if (fragment.range) yield [fragment.range, "namespace", []];
+        }
+    }
+}
+
 
 export function *buildTokens(document: TextDocument, parsed: Parsed) {
     const { virtualLines, law } = parsed;
@@ -110,6 +113,7 @@ export function *buildTokens(document: TextDocument, parsed: Parsed) {
     const ranges: [[number, number], string, string[]][] = [];
 
     ranges.push(...tokensOfEL(law));
+    ranges.push(...tokensOfPointers(parsed));
 
     for (const vl of virtualLines) {
         if (vl.type === LineType.BNK || vl.type === VirtualOnlyLineType.IND || vl.type === VirtualOnlyLineType.DED) {

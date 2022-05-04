@@ -1,4 +1,5 @@
 import { isAppdxItem, isArticle, isArticleGroup, isArticleGroupTitle, isArticleTitle, isLaw, isLawBody, isLawNum, isLawTitle, isParagraphItem, isParagraphItemTitle, isSupplProvision, isSupplProvisionAppdxItem, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel } from "lawtext/dist/src/law/std";
+import { Container } from "lawtext/dist/src/node/container";
 import { EL } from "lawtext/dist/src/node/el";
 import { ____PF } from "lawtext/dist/src/node/el/controls";
 import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
@@ -15,7 +16,7 @@ import { Parsed } from "./common";
 
 export const getReferences = (document: TextDocument, parsed: Parsed, position: Position): Location[] => {
     const offset = document.offsetAt(position);
-    const { variableReferences, declarations, pointerRangesList, containers } = parsed;
+    const { variableReferences, declarations, containers, pointerEnvByEL } = parsed;
     const locations: Location[] = [];
 
     const varRefs = new Set<____VarRef>();
@@ -67,15 +68,38 @@ export const getReferences = (document: TextDocument, parsed: Parsed, position: 
         }
     }
 
-    const fragments = new Set<____PF>();
+    const fragments = new Set<{fragment: ____PF, containers: Container[]}>();
 
-    const allFragments = pointerRangesList.map(l => l.ranges()).flat().map(r => r.pointers()).flat().map(p => p.fragments()).flat();
+    const allFragments = [...pointerEnvByEL.values()].map(p => p.located?.type === "internal" ? p.located.fragments : []).flat();
 
-    for (const fragment of allFragments) {
+    for (const pointerEnv of pointerEnvByEL.values()) {
+
+        if (!pointerEnv.located || pointerEnv.located.type !== "internal") continue;
+
+        for (const { fragment, containers } of pointerEnv.located.fragments) {
+            if (!fragment.range) continue;
+            if (!(fragment.range[0] <= offset && offset < fragment.range[1])) continue;
+            for (const container of containers) {
+                if (!container || !container.el.range) continue;
+                locations.push({
+                    uri: document.uri,
+                    range: {
+                        start: document.positionAt(container.el.range[0]),
+                        end: document.positionAt(container.el.range[1]),
+                    },
+                });
+                for (const f of allFragments.filter(r => r.containers.includes(container))) {
+                    fragments.add(f);
+                }
+            }
+        }
+    }
+
+
+    for (const { fragment, containers } of allFragments) {
         if (!fragment.range) continue;
         if (!(fragment.range[0] <= offset && offset < fragment.range[1])) continue;
-        for (const containerID of fragment.targetContainerIDs){
-            const container = containers.get(containerID);
+        for (const container of containers){
             if (!container || !container.el.range) continue;
             locations.push({
                 uri: document.uri,
@@ -84,7 +108,7 @@ export const getReferences = (document: TextDocument, parsed: Parsed, position: 
                     end: document.positionAt(container.el.range[1]),
                 },
             });
-            for (const f of allFragments.filter(r => r.attr.targetContainerIDs?.includes(containerID))) {
+            for (const f of allFragments.filter(r => r.containers.includes(container))) {
                 fragments.add(f);
             }
         }
@@ -125,14 +149,14 @@ export const getReferences = (document: TextDocument, parsed: Parsed, position: 
                         end: document.positionAt(containerTitle.range[1]),
                     },
                 });
-                for (const f of allFragments.filter(r => r.attr.targetContainerIDs?.includes(container.containerID))) {
+                for (const f of allFragments.filter(r => r.containers.includes(container))) {
                     fragments.add(f);
                 }
             }
         }
     }
 
-    for (const fragment of fragments) {
+    for (const { fragment } of fragments) {
         if (fragment.range) {
             locations.push({
                 uri: document.uri,
