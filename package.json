@@ -94,14 +94,58 @@
                 "command": "lawtext.openURI",
                 "title": "Open Lawtext URI",
                 "category": "Lawtext"
+            },
+            {
+                "command": "lawtext.toXML",
+                "title": "Convert to XML",
+                "icon": "$(file-code)",
+                "category": "Lawtext"
+            },
+            {
+                "command": "lawtext.toDocx",
+                "title": "Convert to Word (.docx)",
+                "icon": "$(book)",
+                "category": "Lawtext"
+            },
+            {
+                "command": "lawtext.xmlToLawtext",
+                "title": "Convert Law XML to Lawtext",
+                "icon": "$(law)",
+                "category": "Lawtext"
+            },
+            {
+                "command": "lawtext.xmlToDocx",
+                "title": "Convert Law XML to Word (.docx)",
+                "icon": "$(book)",
+                "category": "Lawtext"
             }
         ],
         "menus": {
             "editor/title": [
                 {
                     "command": "lawtext.showLawtextPreview",
-                    "group": "navigation",
+                    "group": "navigation@1",
                     "when": "resourceLangId == lawtext"
+                },
+                {
+                    "command": "lawtext.toXML",
+                    "group": "navigation@2",
+                    "when": "resourceLangId == lawtext"
+                },
+                {
+                    "command": "lawtext.toDocx",
+                    "group": "navigation@3",
+                    "when": "resourceLangId == lawtext"
+                },
+                {
+                    "command": "lawtext.xmlToLawtext",
+                    "group": "navigation@1",
+                    "when": "resourceLangId == xml"
+                },
+                {
+                    "command": "lawtext.xmlToDocx",
+                    "group": "navigation@2",
+                    "when": "resourceLangId == xml"
                 }
             ]
         },
