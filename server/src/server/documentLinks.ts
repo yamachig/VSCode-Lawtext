@@ -1,4 +1,6 @@
 import { EL } from "lawtext/dist/src/node/el";
+import { toStdLawNum } from "lawtext/dist/src/law/num";
+
 import {
     DocumentLink,
 } from "vscode-languageserver";
@@ -17,7 +19,7 @@ function *getDocumentLinksOfEL(document: TextDocument, el: EL | string): Iterabl
                 start: document.positionAt(el.range[0]),
                 end: document.positionAt(el.range[1]),
             },
-            target: `lawtext:/elaws/lawnum/${el.text()}.law.txt`,
+            target: `lawtext:/elaws/lawnum/${toStdLawNum(el.text())}.law.txt`,
         };
     }
     for (const child of el.children) {
