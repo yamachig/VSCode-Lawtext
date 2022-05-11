@@ -110,7 +110,7 @@
             {
                 "command": "lawtext.xmlToLawtext",
                 "title": "Convert Law XML to Lawtext",
-                "icon": "$(law)",
+                "icon": "$(go-to-file)",
                 "category": "Lawtext"
             },
             {
