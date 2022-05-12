@@ -152,6 +152,7 @@
         "configurationDefaults": {
             "[lawtext]": {
                 "editor.tabSize": 2,
+                "editor.detectIndentation": false,
                 "editor.insertSpaces": true,
                 "editor.wrappingIndent": "indent",
                 "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?「」（）　、。・―",
