@@ -95,6 +95,10 @@ class SyncedPreviewsManager extends vscode.Disposable {
                     },
                 );
                 state.syncEnabled = true;
+
+                setTimeout(() => {
+                    updateELs(document);
+                }, 300);
             }, 100);
         }
     }
