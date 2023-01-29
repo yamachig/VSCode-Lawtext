@@ -1,5 +1,5 @@
 import { EL } from "lawtext/dist/src/node/el";
-import { toStdLawNum } from "lawtext/dist/src/law/num";
+import { lawNumLikeToLawNum } from "lawtext/dist/src/law/lawNum";
 
 import {
     DocumentLink,
@@ -19,7 +19,7 @@ function *getDocumentLinksOfEL(document: TextDocument, el: EL | string): Iterabl
                 start: document.positionAt(el.range[0]),
                 end: document.positionAt(el.range[1]),
             },
-            target: `lawtext:/elaws/lawnum/${toStdLawNum(el.text())}.law.txt`,
+            target: `lawtext:/elaws/lawnum/${lawNumLikeToLawNum(el.text())}.law.txt`,
         };
     }
     for (const child of el.children) {
