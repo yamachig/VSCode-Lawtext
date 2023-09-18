@@ -8,8 +8,8 @@ export const openFromElaws = async () => {
     if (!lawIDOrLawNum) return;
     const format = await vscode.window.showQuickPick(
         [
-            { label: "xml" as const, description: "Standard law XML directly from e-LAWS" },
             { label: "lawtext" as const, description: "Lawtext generated from XML from e-LAWS" },
+            { label: "xml" as const, description: "Standard law XML directly from e-LAWS" },
             { label: "jsonel" as const, description: "JsonEL generated from XML from e-LAWS" },
         ],
         { placeHolder: "Format:" },
