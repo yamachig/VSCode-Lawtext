@@ -1,6 +1,6 @@
 {
     "name": "lawtext",
-    "version": "0.0.31",
+    "version": "0.0.32",
     "description": "Lawtext language server and preview",
     "displayName": "Lawtext",
     "author": "yamachi",
@@ -22,32 +22,32 @@
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
-        "lawtext": "^0.1.27"
+        "lawtext": "^0.1.33"
     },
     "devDependencies": {
-        "@types/node": "^17.0.45",
-        "@types/react": "^18.0.27",
-        "@types/react-dom": "^18.0.10",
-        "@types/vscode-webview": "^1.57.1",
-        "@types/webpack": "^5.28.0",
-        "@typescript-eslint/eslint-plugin": "^5.49.0",
-        "@typescript-eslint/parser": "^5.49.0",
-        "@vscode/test-web": "^0.0.24",
+        "@types/node": "^20.6.2",
+        "@types/react": "^18.2.21",
+        "@types/react-dom": "^18.2.7",
+        "@types/vscode-webview": "^1.57.2",
+        "@types/webpack": "^5.28.2",
+        "@typescript-eslint/eslint-plugin": "^6.7.0",
+        "@typescript-eslint/parser": "^6.7.0",
+        "@vscode/test-web": "^0.0.45",
         "buffer": "^6.0.3",
-        "eslint": "^8.33.0",
+        "eslint": "^8.49.0",
         "eslint-plugin-prefer-arrow": "^1.2.3",
-        "eslint-plugin-react": "^7.32.2",
+        "eslint-plugin-react": "^7.33.2",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-tsdoc": "^0.2.17",
         "path-browserify": "^1.0.1",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "ts-loader": "^9.4.2",
+        "ts-loader": "^9.4.4",
         "ts-node": "^10.9.1",
-        "typescript": "^4.9.4",
+        "typescript": "^5.2.2",
         "vscode": "^0.9.9",
-        "webpack": "^5.75.0",
-        "webpack-cli": "^4.10.0"
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
     },
     "engines": {
         "vscode": "^1.63.0"

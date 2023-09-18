@@ -25,8 +25,7 @@ export const activate = (context: vscode.ExtensionContext) => {
         worker
     );
 
-    const disposable = client.start();
-    context.subscriptions.push(disposable);
+    client.start();
 };
 
 
