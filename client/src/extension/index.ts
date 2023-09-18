@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import previewEL from "./command/previewEL";
 import loaderContentProvider, { lawtextScheme } from "./loaderContentProvider";
 import openURI from "./command/openURI";
+import openFromElaws from "./command/openFromElaws";
 import showLawtextPreview from "./command/showLawtextPreview";
 import toXML from "./command/toXML";
 import xmlToLawtext from "./command/xmlToLawtext";
@@ -13,6 +14,8 @@ export const activate = (context: vscode.ExtensionContext) => {
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(lawtextScheme, loaderContentProvider));
 
     context.subscriptions.push(vscode.commands.registerCommand("lawtext.openURI", openURI));
+
+    context.subscriptions.push(vscode.commands.registerCommand("lawtext.openFromElaws", openFromElaws));
 
     context.subscriptions.push(vscode.commands.registerCommand("lawtext.showLawtextPreview", showLawtextPreview));
 

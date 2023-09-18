@@ -1,6 +1,6 @@
 {
     "name": "lawtext",
-    "version": "0.0.32",
+    "version": "0.0.33",
     "description": "Lawtext language server and preview",
     "displayName": "Lawtext",
     "author": "yamachi",
@@ -91,6 +91,12 @@
                 "category": "Lawtext"
             },
             {
+                "command": "lawtext.openFromElaws",
+                "title": "Open law file from e-LAWS",
+                "icon": "$(globe)",
+                "category": "Lawtext"
+            },
+            {
                 "command": "lawtext.openURI",
                 "title": "Open Lawtext URI",
                 "category": "Lawtext"
@@ -123,28 +129,33 @@
         "menus": {
             "editor/title": [
                 {
-                    "command": "lawtext.showLawtextPreview",
+                    "command": "lawtext.openFromElaws",
                     "group": "navigation@1",
+                    "when": "(resourceLangId == lawtext) || resourceLangId == xml"
+                },
+                {
+                    "command": "lawtext.showLawtextPreview",
+                    "group": "navigation@2",
                     "when": "resourceLangId == lawtext"
                 },
                 {
                     "command": "lawtext.toXML",
-                    "group": "navigation@2",
-                    "when": "resourceLangId == lawtext"
-                },
-                {
-                    "command": "lawtext.toDocx",
                     "group": "navigation@3",
                     "when": "resourceLangId == lawtext"
                 },
                 {
+                    "command": "lawtext.toDocx",
+                    "group": "navigation@4",
+                    "when": "resourceLangId == lawtext"
+                },
+                {
                     "command": "lawtext.xmlToLawtext",
-                    "group": "navigation@1",
+                    "group": "navigation@2",
                     "when": "resourceLangId == xml"
                 },
                 {
                     "command": "lawtext.xmlToDocx",
-                    "group": "navigation@2",
+                    "group": "navigation@3",
                     "when": "resourceLangId == xml"
                 }
             ]

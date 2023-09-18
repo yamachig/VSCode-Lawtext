@@ -81,8 +81,12 @@ export class LoaderContentProvider implements vscode.TextDocumentContentProvider
                 if (!lawData.ok) {
                     throw new Error(`Failed to parse law XML: ${lawData.error}`);
                 }
-                this.pictURLCache.set(uri.toString(), lawData.lawData.pictURL);
-                return renderLawtext(lawData.lawData.el);
+                if (ext.endsWith(".json")) {
+                    return JSON.stringify(lawData.lawData.el.json(), undefined, 2);
+                } else {
+                    this.pictURLCache.set(uri.toString(), lawData.lawData.pictURL);
+                    return renderLawtext(lawData.lawData.el);
+                }
             }
         });
     }
