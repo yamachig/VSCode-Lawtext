@@ -4,7 +4,7 @@ import { lawNumLikeToLawNum } from "lawtext/dist/src/law/lawNum";
 import { assertNever } from "lawtext/dist/src/util";
 
 export const openFromElaws = async () => {
-    const lawIDOrLawNum = await vscode.window.showInputBox({ placeHolder: "Enter LawID or LawNum to open XML from e-LAWS" });
+    const lawIDOrLawNum = (await vscode.window.showInputBox({ placeHolder: "Enter LawID or LawNum to open XML from e-LAWS" }))?.trim();
     if (!lawIDOrLawNum) return;
     const format = await vscode.window.showQuickPick(
         [

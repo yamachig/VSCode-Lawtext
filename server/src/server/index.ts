@@ -78,7 +78,10 @@ export const main = (connection: _Connection) => {
         // console.log(`Client capabilities: ${JSON.stringify(capabilities, null, 2)}`);
 
         const serverCapabilities: ServerCapabilities = {
-            textDocumentSync: TextDocumentSyncKind.Incremental,
+            textDocumentSync: {
+                openClose: true,
+                change: TextDocumentSyncKind.Incremental,
+            },
         };
 
         hasConfigurationCapability = Boolean(
@@ -177,13 +180,16 @@ export const main = (connection: _Connection) => {
     });
 
     documents.onDidClose(e => {
+        console.dir({ method: "documents.onDidClose", e });
         const document = e.document;
+        connection.sendDiagnostics({ uri: document.uri, diagnostics: [] });
         documentSettings.delete(document.uri);
         tokenBuilders.delete(document.uri);
         parsedCache.delete(document.uri);
     });
 
     documents.onDidChangeContent(change => {
+        console.dir({ method: "documents.onDidChangeContent", change });
         const document = change.document;
         parsedCache.delete(document.uri);
         const parsed = getParsed(document);

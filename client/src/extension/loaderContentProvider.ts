@@ -92,6 +92,7 @@ export class LoaderContentProvider implements vscode.TextDocumentContentProvider
     }
 
     private onDidCloseTextDocument(document: vscode.TextDocument) {
+        console.log("LoaderContentProvider.onDidCloseTextDocument");
         const documentURIStr = document.uri.toString();
         if (!this.pictURLCache.has(documentURIStr)) return;
         const documents = vscode.workspace.textDocuments.filter(e => e.uri.toString() === documentURIStr);
