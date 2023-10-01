@@ -1,6 +1,6 @@
 {
     "name": "lawtext",
-    "version": "0.0.36",
+    "version": "0.0.37",
     "description": "Lawtext language server and preview",
     "displayName": "Lawtext",
     "author": "yamachi",
@@ -22,17 +22,17 @@
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
-        "lawtext": "^0.1.35"
+        "lawtext": "^0.1.37"
     },
     "devDependencies": {
-        "@types/node": "^20.6.4",
-        "@types/react": "^18.2.22",
-        "@types/react-dom": "^18.2.7",
+        "@types/node": "^20.8.0",
+        "@types/react": "^18.2.24",
+        "@types/react-dom": "^18.2.8",
         "@types/vscode-webview": "^1.57.2",
-        "@types/webpack": "^5.28.2",
-        "@typescript-eslint/eslint-plugin": "^6.7.2",
-        "@typescript-eslint/parser": "^6.7.2",
-        "@vscode/test-web": "^0.0.45",
+        "@types/webpack": "^5.28.3",
+        "@typescript-eslint/eslint-plugin": "^6.7.3",
+        "@typescript-eslint/parser": "^6.7.3",
+        "@vscode/test-web": "^0.0.46",
         "buffer": "^6.0.3",
         "eslint": "^8.50.0",
         "eslint-plugin-prefer-arrow": "^1.2.3",
