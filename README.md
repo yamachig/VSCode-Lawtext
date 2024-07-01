@@ -1,14 +1,14 @@
 Lawtext
 ========================
 
-This extension provides syntax hilighting and previewing [Lawtext](https://github.com/yamachig/lawtext) files.
+This extension provides syntax highlighting and previewing [Lawtext](https://github.com/yamachig/lawtext) files.
 
 How to use
 ========================
 
-Syntax hilighting is automatically applied when you open Lawtext file (*.law.txt).
+Syntax highlighting is automatically applied when you open a Lawtext file (*.law.txt).
 
-Press Ctrl+Shift+L to open preview window.
+Press Ctrl+Shift+L to open the preview window.
 
 Screenshots
 ========================

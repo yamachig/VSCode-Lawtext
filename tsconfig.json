@@ -2,12 +2,9 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es2020",
-        // "outDir": "out",
-        // "rootDir": "src",
         "lib": ["es2020", "dom"],
         "sourceMap": true,
         "declaration": true,
-        // "suppressImplicitAnyIndexErrors": true
 
         "jsx": "react",
         
@@ -38,6 +35,7 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
     },
+	"include": ["*.mjs"],
     "exclude": [
         "out",
         "node_modules",
@@ -48,6 +46,5 @@
     "references": [
         { "path": "./client" },
         { "path": "./server" },
-        // { "path": "./webpack-configs" }
     ]
 }
