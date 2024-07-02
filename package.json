@@ -18,7 +18,9 @@
         "build:dev": "npx webpack --color --config ./webpack-configs/index.ts",
         "build:prod": "npx webpack --color --mode production --devtool hidden-source-map --config ./webpack-configs/index.ts",
         "watch": "npx webpack --color --watch --config ./webpack-configs/index.ts",
-        "postinstall": "pushd client && (npm install & popd) && pushd server && (npm install & popd)",
+        "postinstall": "npm run install-client && npm run install-server",
+        "install-client": "cd client && npm install",
+        "install-server": "cd server && npm install",
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. ."
     },
     "dependencies": {
