@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { parseLawID } from "lawtext/dist/src/law/lawID";
+import { parseLawIDOrLawRevID } from "lawtext/dist/src/law/lawID";
 import { lawNumLikeToLawNum } from "lawtext/dist/src/law/lawNum";
 import { assertNever } from "lawtext/dist/src/util";
 
@@ -15,7 +15,7 @@ export const openFromElaws = async () => {
         { placeHolder: "Format:" },
     );
     if (!format) return;
-    const lawID = parseLawID(lawIDOrLawNum);
+    const lawID = parseLawIDOrLawRevID(lawIDOrLawNum);
     const uriString = [
         "lawtext:/elaws/",
         (lawID ? "lawid/" : "lawnum/"),
