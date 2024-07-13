@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { LanguageClientOptions } from "vscode-languageclient";
+import type { LanguageClientOptions } from "vscode-languageclient";
 
 import { LanguageClient } from "vscode-languageclient/browser";
 import * as extension from "./extension";

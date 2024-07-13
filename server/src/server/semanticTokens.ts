@@ -1,4 +1,4 @@
-import {
+import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
@@ -6,7 +6,7 @@ import { LineType } from "lawtext/dist/src/node/cst/line";
 import { VirtualOnlyLineType } from "lawtext/dist/src/parser/std/virtualLine";
 import { assertNever } from "lawtext/dist/src/util";
 import * as std from "lawtext/dist/src/law/std";
-import { Parsed } from "./common";
+import type { Parsed } from "./common";
 import { ____Declaration } from "lawtext/dist/src/node/el/controls/declaration";
 import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
 import { __PContent } from "lawtext/dist/src/node/el/controls";

@@ -1,26 +1,28 @@
-import {
-    TextDocuments,
+import type {
     InitializeParams,
-    DidChangeConfigurationNotification,
-    TextDocumentSyncKind,
     InitializeResult,
     _Connection,
-    SemanticTokensBuilder,
-    ServerCapabilities,
+    ServerCapabilities } from "vscode-languageserver";
+import {
+    TextDocuments,
+    DidChangeConfigurationNotification,
+    TextDocumentSyncKind,
+    SemanticTokensBuilder
 } from "vscode-languageserver";
 
 import {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { BuilderItem, buildSampleTokens, buildTokens, tokenModifiers, tokenTypes } from "./semanticTokens";
+import type { BuilderItem } from "./semanticTokens";
+import { buildSampleTokens, buildTokens, tokenModifiers, tokenTypes } from "./semanticTokens";
 import { getDiagnostics } from "./diagnostics";
 
 import { parse } from "lawtext/dist/src/parser/lawtext";
 import { analyze } from "lawtext/dist/src/analyzer";
 import { getHover } from "./hover";
 import { getSymbols } from "./symbols";
-import { Parsed } from "./common";
+import type { Parsed } from "./common";
 import { getDefinitions } from "./definitions";
 import { getReferences } from "./references";
 import { getDocumentHighlights } from "./documentHighlights";

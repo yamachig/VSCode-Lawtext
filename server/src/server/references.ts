@@ -1,18 +1,18 @@
 import { isAppdxItem, isArticle, isArticleGroup, isArticleGroupTitle, isArticleTitle, isLaw, isLawBody, isLawNum, isLawTitle, isParagraphItem, isParagraphItemTitle, isSupplProvision, isSupplProvisionAppdxItem, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel } from "lawtext/dist/src/law/std";
-import { Container } from "lawtext/dist/src/node/container";
-import { EL } from "lawtext/dist/src/node/el";
-import { ____PF } from "lawtext/dist/src/node/el/controls";
-import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
-import {
+import type { Container } from "lawtext/dist/src/node/container";
+import type { EL } from "lawtext/dist/src/node/el";
+import type { ____PF } from "lawtext/dist/src/node/el/controls";
+import type { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
+import type {
     Location,
     Position,
 } from "vscode-languageserver";
 
-import {
+import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { Parsed } from "./common";
+import type { Parsed } from "./common";
 
 export const getReferences = (document: TextDocument, parsed: Parsed, position: Position): Location[] => {
     const offset = document.offsetAt(position);

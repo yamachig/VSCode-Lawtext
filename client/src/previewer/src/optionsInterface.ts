@@ -1,4 +1,4 @@
-import { JsonEL } from "lawtext/dist/src/node/el/jsonEL";
+import type { JsonEL } from "lawtext/dist/src/node/el/jsonEL";
 
 export interface PreviewerOptions {
     els?: JsonEL[],

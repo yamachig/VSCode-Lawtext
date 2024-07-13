@@ -2,13 +2,14 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { HTMLAnyELs } from "lawtext/dist/src/renderer/rules/any";
 import htmlCSS from "lawtext/dist/src/renderer/rules/htmlCSS";
-import * as std from "lawtext/dist/src/law/std";
-import { PreviewerOptions } from "./optionsInterface";
+import type * as std from "lawtext/dist/src/law/std";
+import type { PreviewerOptions } from "./optionsInterface";
 import { omit, throttle } from "lawtext/dist/src/util";
-import { HTMLOptions } from "lawtext/dist/src/renderer/common/html";
-import { EL } from "lawtext/dist/src/node/el";
+import type { HTMLOptions } from "lawtext/dist/src/renderer/common/html";
+import type { EL } from "lawtext/dist/src/node/el";
 import { loadEL } from "lawtext/dist/src/node/el/loadEL";
-import { ActionCounter, getCenterOffset, scrollToOffset } from "./offset";
+import type { ActionCounter } from "./offset";
+import { getCenterOffset, scrollToOffset } from "./offset";
 
 
 const vscode = acquireVsCodeApi<WebviewState>();

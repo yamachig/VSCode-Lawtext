@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
+import type {
+    LanguageClientOptions,
+    ServerOptions } from "vscode-languageclient/node";
 import {
     LanguageClient,
-    LanguageClientOptions,
-    ServerOptions,
     TransportKind
 } from "vscode-languageclient/node";
 import * as path from "path";

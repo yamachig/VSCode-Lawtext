@@ -1,15 +1,17 @@
+import type {
+    DocumentSymbol } from "vscode-languageserver";
 import {
-    DocumentSymbol,
     SymbolKind,
 } from "vscode-languageserver";
 
-import {
+import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { EL } from "lawtext/dist/src/node/el";
+import type { EL } from "lawtext/dist/src/node/el";
 import * as std from "lawtext/dist/src/law/std";
-import { Parsed, toRange } from "./common";
+import type { Parsed } from "./common";
+import { toRange } from "./common";
 
 export const getSymbols = (document: TextDocument, parsed: Parsed): DocumentSymbol[] => {
     return [...symbolsOfEL(document, parsed.law)];

@@ -1,16 +1,16 @@
-import {
+import type {
     Hover,
     Position,
     Range,
 } from "vscode-languageserver";
 
-import {
+import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { EL } from "lawtext/dist/src/node/el";
+import type { EL } from "lawtext/dist/src/node/el";
 import * as std from "lawtext/dist/src/law/std";
-import { Parsed } from "./common";
+import type { Parsed } from "./common";
 
 export const getHover = (document: TextDocument, parsed: Parsed, position: Position): Hover | null => {
     const offset = document.offsetAt(position);

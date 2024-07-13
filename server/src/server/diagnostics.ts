@@ -1,13 +1,14 @@
+import type {
+    Diagnostic } from "vscode-languageserver";
 import {
-    Diagnostic,
     DiagnosticSeverity,
 } from "vscode-languageserver";
 
-import {
+import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { Parsed } from "./common";
+import type { Parsed } from "./common";
 
 const showAnalyzeErrors = false;
 export const getDiagnostics = (textDocument: TextDocument, parsed: Parsed) => {

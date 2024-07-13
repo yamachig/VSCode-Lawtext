@@ -1,14 +1,14 @@
-import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
-import {
+import type { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
+import type {
     DocumentHighlight,
     Position,
 } from "vscode-languageserver";
 
-import {
+import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { Parsed } from "./common";
+import type { Parsed } from "./common";
 
 export const getDocumentHighlights = (document: TextDocument, parsed: Parsed, position: Position): DocumentHighlight[] => {
     const offset = document.offsetAt(position);

@@ -6,9 +6,9 @@ import * as std from "lawtext/dist/src/law/std";
 import path from "path";
 import { pictMimeDict } from "lawtext/dist/src/util";
 import previewerScript from "../previewer/out/bundle.js.txt";
-import { PreviewerOptions } from "../previewer/src/optionsInterface";
+import type { PreviewerOptions } from "../previewer/src/optionsInterface";
 import loaderContentProvider from "./loaderContentProvider";
-import { JsonEL } from "lawtext/dist/src/node/el/jsonEL";
+import type { JsonEL } from "lawtext/dist/src/node/el/jsonEL";
 
 const previewerHTML = /*html*/`\
 <!DOCTYPE html>

@@ -1,7 +1,7 @@
 
 import path from "path";
 import fs from "fs";
-import webpack from "webpack";
+import type webpack from "webpack";
 import WatchMessagePlugin from "./WatchMessagePlugin";
 
 let rootDir = path.dirname(__dirname);
