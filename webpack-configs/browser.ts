@@ -53,7 +53,10 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
             new WatchMessagePlugin(),
             new webpack.DefinePlugin({
                 process: { env: {} }
-            })
+            }),
+            new webpack.optimize.LimitChunkCountPlugin({
+                maxChunks: 1,
+            }),
         ],
 
         watchOptions: {

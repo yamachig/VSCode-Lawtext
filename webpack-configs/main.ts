@@ -1,7 +1,7 @@
 
 import path from "path";
 import fs from "fs";
-import type webpack from "webpack";
+import webpack from "webpack";
 import WatchMessagePlugin from "./WatchMessagePlugin";
 
 let rootDir = path.dirname(__dirname);
@@ -43,7 +43,12 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
             ],
         },
 
-        plugins: [new WatchMessagePlugin()],
+        plugins: [
+            new WatchMessagePlugin(),
+            new webpack.optimize.LimitChunkCountPlugin({
+                maxChunks: 1,
+            }),
+        ],
 
         watchOptions: {
             ignored: [
