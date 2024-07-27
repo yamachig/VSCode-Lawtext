@@ -37,7 +37,7 @@ class SyncedPreviewsManager extends vscode.Disposable {
         super.dispose();
     }
 
-    public open(document: vscode.TextDocument) {
+    public async open(document: vscode.TextDocument) {
         const documentURIStr = document.uri.toString();
         const state = this.states.get(documentURIStr);
         if (state) {
@@ -45,7 +45,7 @@ class SyncedPreviewsManager extends vscode.Disposable {
         } else {
             const lawtext = document.getText();
             const { value: el } = parse(lawtext);
-            analyze(el);
+            await analyze({ elToBeModified: el });
             const panel = vscode.window.createWebviewPanel(
                 "lawtextPreview",
                 "Lawtext Preview",
@@ -59,10 +59,10 @@ class SyncedPreviewsManager extends vscode.Disposable {
                 this.states.delete(documentURIStr);
             });
 
-            const updateELs = throttle((document: vscode.TextDocument) => {
+            const updateELs = throttle(async (document: vscode.TextDocument) => {
                 const lawtext = document.getText();
                 const { value: el } = parse(lawtext);
-                analyze(el);
+                await analyze({ elToBeModified: el });
 
                 const previewerOptions: PreviewerOptions = {
                     els: [el.json(true, true)],

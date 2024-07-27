@@ -31,12 +31,12 @@ import { getDocumentLinks } from "./documentLinks";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedCache: Map<string, Parsed> = new Map();
-const getParsed = (textDocument: TextDocument): Parsed => {
+const getParsed = async (textDocument: TextDocument): Promise<Parsed> => {
     const cached = parsedCache.get(textDocument.uri);
     if (cached) return cached;
 
     const { value: law, errors: parseErrors, virtualLines } = parse(textDocument.getText());
-    const analysis = analyze(law);
+    const analysis = await analyze({ elToBeModified: law });
 
     const parsed: Parsed = {
         law,
@@ -174,8 +174,8 @@ export const main = (connection: _Connection) => {
             documentSettings.clear();
         }
 
-        documents.all().forEach(document => {
-            const parsed = getParsed(document);
+        documents.all().forEach(async document => {
+            const parsed = await getParsed(document);
             const diagnostics = getDiagnostics(document, parsed);
             connection.sendDiagnostics({ uri: document.uri, diagnostics });
         });
@@ -190,11 +190,11 @@ export const main = (connection: _Connection) => {
         parsedCache.delete(document.uri);
     });
 
-    documents.onDidChangeContent(change => {
+    documents.onDidChangeContent(async change => {
         console.dir({ method: "documents.onDidChangeContent", change });
         const document = change.document;
         parsedCache.delete(document.uri);
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
         const diagnostics = getDiagnostics(document, parsed);
         connection.sendDiagnostics({ uri: document.uri, diagnostics });
     });
@@ -203,62 +203,62 @@ export const main = (connection: _Connection) => {
         connection.console.log("We received an file change event");
     });
 
-    connection.onHover(e => {
+    connection.onHover(async e => {
         const document = documents.get(e.textDocument.uri);
         if (document === undefined) {
             return null;
         }
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
         const hover = getHover(document, parsed, e.position);
         return hover;
     });
 
-    connection.onDocumentSymbol(e => {
+    connection.onDocumentSymbol(async e => {
         const document = documents.get(e.textDocument.uri);
         if (document === undefined) {
             return null;
         }
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
         const symbols = getSymbols(document, parsed);
         return symbols;
     });
 
-    connection.onDefinition(e => {
+    connection.onDefinition(async e => {
         const document = documents.get(e.textDocument.uri);
         if (document === undefined) {
             return null;
         }
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
         const definition = getDefinitions(document, parsed, e.position);
         return definition;
     });
 
-    connection.onReferences(e => {
+    connection.onReferences(async e => {
         const document = documents.get(e.textDocument.uri);
         if (document === undefined) {
             return null;
         }
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
         const definition = getReferences(document, parsed, e.position);
         return definition;
     });
 
-    connection.onDocumentHighlight(e => {
+    connection.onDocumentHighlight(async e => {
         const document = documents.get(e.textDocument.uri);
         if (document === undefined) {
             return null;
         }
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
         const definition = getDocumentHighlights(document, parsed, e.position);
         return definition;
     });
 
-    connection.onCodeLens(e => {
+    connection.onCodeLens(async e => {
         const document = documents.get(e.textDocument.uri);
         if (document === undefined) {
             return null;
         }
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
         const codeLenses = getCodeLenses(document, parsed);
         return codeLenses;
     });
@@ -268,17 +268,17 @@ export const main = (connection: _Connection) => {
         return retCodeLens;
     });
 
-    connection.onDocumentLinks(e => {
+    connection.onDocumentLinks(async e => {
         const document = documents.get(e.textDocument.uri);
         if (document === undefined) {
             return null;
         }
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
         const documentLinks = getDocumentLinks(document, parsed);
         return documentLinks;
     });
 
-    connection.languages.semanticTokens.on((params) => {
+    connection.languages.semanticTokens.on(async (params) => {
         console.dir({ method: "connection.languages.semanticTokens.on", params });
         const document = documents.get(params.textDocument.uri);
         if (document === undefined) {
@@ -286,7 +286,7 @@ export const main = (connection: _Connection) => {
         }
         const builder = getTokenBuilder(document);
 
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
 
         const builderItems: BuilderItem[] = [
             ...buildSampleTokens(document),
@@ -299,7 +299,7 @@ export const main = (connection: _Connection) => {
         return builder.build();
     });
 
-    connection.languages.semanticTokens.onDelta((params) => {
+    connection.languages.semanticTokens.onDelta(async (params) => {
         console.dir({ method: "connection.languages.semanticTokens.onDelta", params });
         const document = documents.get(params.textDocument.uri);
         if (document === undefined) {
@@ -307,7 +307,7 @@ export const main = (connection: _Connection) => {
         }
         const builder = getTokenBuilder(document);
 
-        const parsed = getParsed(document);
+        const parsed = await getParsed(document);
 
         const builderItems: BuilderItem[] = [
             ...buildSampleTokens(document),
