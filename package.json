@@ -24,38 +24,40 @@
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. test-data"
     },
     "dependencies": {
-        "lawtext": "^0.1.51"
+        "lawtext": "^0.1.52"
     },
     "devDependencies": {
-        "@types/node": "^20.14.9",
-        "@types/react": "^18.3.3",
-        "@types/react-dom": "^18.3.0",
+        "@stylistic/eslint-plugin": "^5.6.1",
+        "@types/node": "^25.0.3",
+        "@types/react": "^19.2.7",
+        "@types/react-dom": "^19.2.3",
+        "@types/vscode": "^1.107.0",
         "@types/vscode-webview": "^1.57.5",
         "@types/webpack": "^5.28.5",
-        "@vscode/test-web": "^0.0.55",
+        "@vscode/test-cli": "^0.0.12",
+        "@vscode/test-electron": "^2.5.2",
+        "@vscode/test-web": "^0.0.77",
         "buffer": "^6.0.3",
-        "eslint": "^8.57.0",
+        "eslint": "^9.39.2",
         "eslint-plugin-prefer-arrow": "^1.2.3",
-        "eslint-plugin-react": "^7.34.3",
-        "eslint-plugin-react-hooks": "^4.6.2",
-        "eslint-plugin-tsdoc": "^0.3.0",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.0.1",
+        "eslint-plugin-tsdoc": "^0.5.0",
         "path-browserify": "^1.0.1",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "ts-loader": "^9.5.1",
+        "react": "^19.2.3",
+        "react-dom": "^19.2.3",
+        "ts-loader": "^9.5.4",
         "ts-node": "^10.9.2",
-        "typescript": "^5.5.2",
-        "typescript-eslint": "^7.13.1",
-        "vscode": "^0.9.9",
-        "webpack": "^5.92.1",
-        "webpack-cli": "^5.1.4"
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.51.0",
+        "webpack": "^5.104.1",
+        "webpack-cli": "^6.0.1"
     },
     "engines": {
         "vscode": "^1.63.0"
     },
     "activationEvents": [
-        "onCommand:extension.showLawtextPreview",
-        "onLanguage:lawtext"
+        "onCommand:extension.showLawtextPreview"
     ],
     "categories": [
         "Programming Languages"

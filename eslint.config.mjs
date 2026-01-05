@@ -1,11 +1,13 @@
 import globals from "globals";
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 import tsdoc from "eslint-plugin-tsdoc";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
+import stylistic from "@stylistic/eslint-plugin";
 
-export default tseslint.config(
+export default defineConfig(
     {
         ignores: ["client/out/**/*", "server/out/**/*"],
     },
@@ -35,6 +37,7 @@ export default tseslint.config(
             tsdoc,
             react,
             "react-hooks": reactHooks,
+            "@stylistic": stylistic,
         },
 
         settings: {
@@ -131,7 +134,7 @@ export default tseslint.config(
             "no-unused-vars": "off",
             "@typescript-eslint/no-unused-vars": ["error"],
 
-            "@typescript-eslint/type-annotation-spacing": "error",
+            "@stylistic/type-annotation-spacing": "error",
             "@typescript-eslint/consistent-type-imports": [
                 "error", {
                     "disallowTypeAnnotations": false,
