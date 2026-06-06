@@ -1,10 +1,10 @@
 
-import path from "path";
-import fs from "fs";
+import path from "node:path";
+import fs from "node:fs";
 import webpack from "webpack";
-import WatchMessagePlugin from "./WatchMessagePlugin";
+import WatchMessagePlugin from "./WatchMessagePlugin.ts";
 
-let rootDir = path.dirname(__dirname);
+let rootDir = path.dirname(import.meta.dirname);
 while (!fs.existsSync(path.join(rootDir, "package.json"))) {
     const newRootDir = path.dirname(rootDir);
     if (newRootDir === rootDir) break;
@@ -22,6 +22,7 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
         output: {
             filename: "[name].js",
             path: path.resolve(projDir, "./out-browser"),
+            libraryTarget: "commonjs",
             clean: argv.mode === "production",
         },
         resolve: {
@@ -33,8 +34,8 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
                 "fs": false,
             },
             fallback: {
-                "path": require.resolve("path-browserify"),
-                "buffer": require.resolve("buffer/"),
+                "path": import.meta.resolve("path-browserify"),
+                "buffer": import.meta.resolve("buffer/"),
             },
         },
         module: {

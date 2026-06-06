@@ -1,15 +1,13 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2020",
-        "lib": ["es2020", "dom"],
+        "module": "node18",
+        "target": "es2023",
+        "rewriteRelativeImportExtensions": true,
         "sourceMap": true,
         "declaration": true,
 
         "jsx": "react",
-        
-        "downlevelIteration": true,
-        "moduleResolution": "node",
+
         "resolveJsonModule": true,
         "esModuleInterop": true,
 

@@ -21,8 +21,8 @@ export const activate = (context: vscode.ExtensionContext) => {
     client = new LanguageClient(
         "lawtextLanguageServerBrowser",
         "Lawtext Language Server (browser)",
+        worker,
         clientOptions,
-        worker
     );
 
     client.start();

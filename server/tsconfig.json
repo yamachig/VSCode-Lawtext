@@ -1,17 +1,15 @@
 {
     "compilerOptions": {
-		"module": "commonjs",
-		"target": "es2020",
-		"lib": ["es2020", "dom"],
-		"outDir": "out",
-		"rootDir": "src",
+        "module": "node18",
+        "target": "es2023",
+        "rewriteRelativeImportExtensions": true,
+        "outDir": "out",
+        "rootDir": "src",
         "composite": true,
         "sourceMap": true,
         "declaration": true,
         // "suppressImplicitAnyIndexErrors": true
-        
-        "downlevelIteration": true,
-        "moduleResolution": "node",
+
         "resolveJsonModule": true,
         "esModuleInterop": true,
 

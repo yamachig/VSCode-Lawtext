@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/static-components */
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { HTMLAnyELs } from "lawtext/dist/src/renderer/rules/any";
@@ -105,7 +106,7 @@ const App = () => {
                 a.removeEventListener("click", anchorOnClick);
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line @eslint-react/exhaustive-deps
     }, [els]);
 
 

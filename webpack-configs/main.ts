@@ -2,9 +2,9 @@
 import path from "path";
 import fs from "fs";
 import webpack from "webpack";
-import WatchMessagePlugin from "./WatchMessagePlugin";
+import WatchMessagePlugin from "./WatchMessagePlugin.ts";
 
-let rootDir = path.dirname(__dirname);
+let rootDir = path.dirname(import.meta.dirname);
 while (!fs.existsSync(path.join(rootDir, "package.json"))) {
     const newRootDir = path.dirname(rootDir);
     if (newRootDir === rootDir) break;
