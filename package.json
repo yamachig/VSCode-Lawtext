@@ -1,6 +1,6 @@
 {
     "name": "lawtext",
-    "version": "0.0.47",
+    "version": "0.0.48",
     "description": "Lawtext language server and preview",
     "displayName": "Lawtext",
     "author": "yamachi",
@@ -54,7 +54,7 @@
         "webpack-cli": "^7.2.3"
     },
     "engines": {
-        "vscode": "^1.63.0"
+        "vscode": "^1.140.0"
     },
     "activationEvents": [
         "onCommand:extension.showLawtextPreview"
