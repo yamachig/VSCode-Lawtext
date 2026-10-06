@@ -8,7 +8,7 @@ import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import type { Parsed } from "./common";
+import type { Parsed } from "./common.ts";
 
 const showAnalyzeErrors = false;
 export const getDiagnostics = (textDocument: TextDocument, parsed: Parsed) => {

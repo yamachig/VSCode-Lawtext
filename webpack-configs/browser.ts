@@ -28,13 +28,13 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
         resolve: {
             mainFields: ["browser", "module", "main"],
             extensions: [".ts", ".tsx", ".js", ".json"],
+            extensionAlias: {
+                ".js": [".js", ".ts", ".tsx"],
+            },
             alias: {
-                "node-fetch": false,
-                "cli-progress": false,
-                "fs": false,
+                //
             },
             fallback: {
-                "path": import.meta.resolve("path-browserify"),
                 "buffer": import.meta.resolve("buffer/"),
             },
         },

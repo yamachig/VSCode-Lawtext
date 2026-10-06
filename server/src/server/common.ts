@@ -1,7 +1,7 @@
-import type { Analysis } from "lawtext/dist/src/analyzer";
-import type { Law } from "lawtext/dist/src/law/std";
-import type { ErrorMessage } from "lawtext/dist/src/parser/cst/error";
-import type { VirtualLine } from "lawtext/dist/src/parser/std/virtualLine";
+import type { Analysis } from "lawtext/analyzer/index";
+import type { Law } from "lawtext/law/std/index";
+import type { ErrorMessage } from "lawtext/parser/cst/error";
+import type { VirtualLine } from "lawtext/parser/std/virtualLine";
 import type { Range } from "vscode-languageserver";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 

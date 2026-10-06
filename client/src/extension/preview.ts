@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
-import htmlCSS from "lawtext/dist/src/renderer/rules/htmlCSS";
-import { EL } from "lawtext/dist/src/node/el";
-import { loadEL } from "lawtext/dist/src/node/el/loadEL";
-import * as std from "lawtext/dist/src/law/std";
-import path from "path";
-import { pictMimeDict } from "lawtext/dist/src/util";
+import htmlCSS from "lawtext/renderer/rules/htmlCSS";
+import { EL } from "lawtext/node/el/index";
+import { loadEL } from "lawtext/node/el/loadEL";
+import * as std from "lawtext/law/std/index";
+import path from "pathe";
+import { pictMimeDict } from "lawtext/util/index";
 import previewerScript from "../previewer/out/bundle.js.txt";
-import type { PreviewerOptions } from "../previewer/src/optionsInterface";
-import loaderContentProvider from "./loaderContentProvider";
-import type { JsonEL } from "lawtext/dist/src/node/el/jsonEL";
+import type { PreviewerOptions } from "../previewer/src/optionsInterface.ts";
+import loaderContentProvider from "./loaderContentProvider.ts";
+import type { JsonEL } from "lawtext/node/el/jsonEL";
 
 const previewerHTML = /*html*/`\
 <!DOCTYPE html>

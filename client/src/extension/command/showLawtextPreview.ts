@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import syncedPreviewsManager from "../syncedPreviewsManager";
+import syncedPreviewsManager from "../syncedPreviewsManager.ts";
 
 export const showLawtextPreview = () => {
     const document = vscode.window.activeTextEditor?.document;

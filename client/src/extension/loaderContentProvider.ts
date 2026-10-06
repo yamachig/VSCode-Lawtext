@@ -1,9 +1,8 @@
 import * as vscode from "vscode";
-import FetchElawsLoader from "lawtext/dist/src/data/loaders/FetchElawsLoader";
-import path from "path";
-import { Timing, toLawData } from "lawtext/dist/src/data/lawdata";
-import { renderLawtext } from "lawtext/dist/src/renderer/lawtext";
-import { fetchLawData } from "lawtext/dist/src/elawsApi";
+import { FetchElawsLoader, fetchLawData } from "lawtext/data/loaders/FetchElawsLoader";
+import path from "pathe";
+import { Timing, toLawData } from "lawtext/data/lawdata";
+import { renderLawtext } from "lawtext/renderer/lawtext";
 
 export const lawtextScheme = "lawtext";
 

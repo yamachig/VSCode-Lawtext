@@ -30,6 +30,9 @@ const previewerConfig = (_env: Record<string, string>, argv: Record<string, stri
         resolve: {
             mainFields: ["module", "main"],
             extensions: [".ts", ".tsx", ".js", ".json"],
+            extensionAlias: {
+                ".js": [".js", ".ts", ".tsx"],
+            },
             alias: {
                 //
             },

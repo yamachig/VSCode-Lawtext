@@ -1,5 +1,5 @@
-import type { EL } from "lawtext/dist/src/node/el";
-import { lawNumLikeToLawNum } from "lawtext/dist/src/law/lawNum";
+import type { EL } from "lawtext/node/el/index";
+import { lawNumLikeToLawNum } from "lawtext/law/lawNum";
 
 import type {
     DocumentLink,
@@ -9,7 +9,7 @@ import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import type { Parsed } from "./common";
+import type { Parsed } from "./common.ts";
 
 function *getDocumentLinksOfEL(document: TextDocument, el: EL | string): Iterable<DocumentLink> {
     if (typeof el === "string") return;

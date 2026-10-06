@@ -1,7 +1,7 @@
-import { EL } from "lawtext/dist/src/node/el";
-import type { JsonEL } from "lawtext/dist/src/node/el/jsonEL";
-import { loadEL } from "lawtext/dist/src/node/el/loadEL";
-import preview, { getFigDataMapWithDocument } from "../preview";
+import { EL } from "lawtext/node/el/index";
+import type { JsonEL } from "lawtext/node/el/jsonEL";
+import { loadEL } from "lawtext/node/el/loadEL";
+import preview, { getFigDataMapWithDocument } from "../preview.ts";
 
 export const previewEL = (elOrJsonEL: EL | JsonEL, documentURIStr?: string) => {
     const el = elOrJsonEL instanceof EL ? elOrJsonEL : loadEL(elOrJsonEL);

@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-import preview, { Broadcast, getFigDataMapWithDocument } from "./preview";
-import { parse } from "lawtext/dist/src/parser/lawtext";
-import { analyze } from "lawtext/dist/src/analyzer";
-import type { PreviewerOptions } from "../previewer/src/optionsInterface";
-import { throttle } from "lawtext/dist/src/util";
+import preview, { Broadcast, getFigDataMapWithDocument } from "./preview.ts";
+import { parse } from "lawtext/parser/lawtext";
+import { analyze } from "lawtext/analyzer/index";
+import type { PreviewerOptions } from "../previewer/src/optionsInterface.ts";
+import { throttle } from "lawtext/util/index";
 
 const centerOffset = (documentURIStr: string) => {
     const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentURIStr);

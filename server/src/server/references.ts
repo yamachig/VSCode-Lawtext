@@ -1,8 +1,8 @@
-import { isAppdxItem, isArticle, isArticleGroup, isArticleGroupTitle, isArticleTitle, isLaw, isLawBody, isLawNum, isLawTitle, isParagraphItem, isParagraphItemTitle, isSupplProvision, isSupplProvisionAppdxItem, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel } from "lawtext/dist/src/law/std";
-import type { Container } from "lawtext/dist/src/node/container";
-import type { EL } from "lawtext/dist/src/node/el";
-import type { ____PF } from "lawtext/dist/src/node/el/controls";
-import type { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
+import { isAppdxItem, isArticle, isArticleGroup, isArticleGroupTitle, isArticleTitle, isLaw, isLawBody, isLawNum, isLawTitle, isParagraphItem, isParagraphItemTitle, isSupplProvision, isSupplProvisionAppdxItem, isSupplProvisionAppdxItemTitle, isSupplProvisionLabel } from "lawtext/law/std/index";
+import type { Container } from "lawtext/node/container/index";
+import type { EL } from "lawtext/node/el/index";
+import type { ____PF } from "lawtext/node/el/controls/index";
+import type { ____VarRef } from "lawtext/node/el/controls/varRef";
 import type {
     Location,
     Position,
@@ -12,7 +12,7 @@ import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import type { Parsed } from "./common";
+import type { Parsed } from "./common.ts";
 
 export const getReferences = (document: TextDocument, parsed: Parsed, position: Position): Location[] => {
     const offset = document.offsetAt(position);

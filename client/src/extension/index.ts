@@ -1,13 +1,13 @@
 import * as vscode from "vscode";
-import previewEL from "./command/previewEL";
-import loaderContentProvider, { lawtextScheme } from "./loaderContentProvider";
-import openURI from "./command/openURI";
-import openFromElaws from "./command/openFromElaws";
-import showLawtextPreview from "./command/showLawtextPreview";
-import toXML from "./command/toXML";
-import xmlToLawtext from "./command/xmlToLawtext";
-import toDocx from "./command/toDocx";
-import xmlToDocx from "./command/xmlToDocx";
+import previewEL from "./command/previewEL.ts";
+import loaderContentProvider, { lawtextScheme } from "./loaderContentProvider.ts";
+import openURI from "./command/openURI.ts";
+import openFromElaws from "./command/openFromElaws.ts";
+import showLawtextPreview from "./command/showLawtextPreview.ts";
+import toXML from "./command/toXML.ts";
+import xmlToLawtext from "./command/xmlToLawtext.ts";
+import toDocx from "./command/toDocx.ts";
+import xmlToDocx from "./command/xmlToDocx.ts";
 
 export const activate = (context: vscode.ExtensionContext) => {
 

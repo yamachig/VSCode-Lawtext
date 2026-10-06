@@ -14,20 +14,20 @@ import {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import type { BuilderItem } from "./semanticTokens";
-import { buildSampleTokens, buildTokens, tokenModifiers, tokenTypes } from "./semanticTokens";
-import { getDiagnostics } from "./diagnostics";
+import type { BuilderItem } from "./semanticTokens.ts";
+import { buildSampleTokens, buildTokens, tokenModifiers, tokenTypes } from "./semanticTokens.ts";
+import { getDiagnostics } from "./diagnostics.ts";
 
-import { parse } from "lawtext/dist/src/parser/lawtext";
-import { analyze } from "lawtext/dist/src/analyzer";
-import { getHover } from "./hover";
-import { getSymbols } from "./symbols";
-import type { Parsed } from "./common";
-import { getDefinitions } from "./definitions";
-import { getReferences } from "./references";
-import { getDocumentHighlights } from "./documentHighlights";
-import { getCodeLenses, getCodeLensResolve } from "./codeLenses";
-import { getDocumentLinks } from "./documentLinks";
+import { parse } from "lawtext/parser/lawtext";
+import { analyze } from "lawtext/analyzer/index";
+import { getHover } from "./hover.ts";
+import { getSymbols } from "./symbols.ts";
+import type { Parsed } from "./common.ts";
+import { getDefinitions } from "./definitions.ts";
+import { getReferences } from "./references.ts";
+import { getDocumentHighlights } from "./documentHighlights.ts";
+import { getCodeLenses, getCodeLensResolve } from "./codeLenses.ts";
+import { getDocumentLinks } from "./documentLinks.ts";
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedCache: Map<string, Parsed> = new Map();

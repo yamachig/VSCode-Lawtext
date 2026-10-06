@@ -6,8 +6,8 @@ import {
     LanguageClient,
     TransportKind
 } from "vscode-languageclient/node";
-import * as path from "node:path";
-import * as extension from "./extension";
+import path from "pathe";
+import * as extension from "./extension/index.ts";
 
 let client: LanguageClient;
 

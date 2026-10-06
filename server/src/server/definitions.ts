@@ -7,7 +7,7 @@ import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import type { Parsed } from "./common";
+import type { Parsed } from "./common.ts";
 
 export const getDefinitions = (document: TextDocument, parsed: Parsed, position: Position): LocationLink[] => {
     const offset = document.offsetAt(position);

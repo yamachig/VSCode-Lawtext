@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "node18",
+        "module": "nodenext",
         "target": "es2023",
         "rewriteRelativeImportExtensions": true,
         "types": ["node", "vscode", "vscode-webview"],

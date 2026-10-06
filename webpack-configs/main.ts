@@ -27,6 +27,9 @@ const commonConfig = (_env: Record<string, string>, argv: Record<string, string>
         resolve: {
             mainFields: ["module", "main"],
             extensions: [".ts", ".tsx", ".js", ".json"],
+            extensionAlias: {
+                ".js": [".js", ".ts", ".tsx"],
+            },
             alias: {
                 //
             },

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import type { LanguageClientOptions } from "vscode-languageclient";
 
 import { LanguageClient } from "vscode-languageclient/browser";
-import * as extension from "./extension";
+import * as extension from "./extension/index.ts";
 
 let client: LanguageClient;
 

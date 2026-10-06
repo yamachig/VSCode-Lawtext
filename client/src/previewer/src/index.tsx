@@ -1,16 +1,16 @@
 /* eslint-disable @eslint-react/static-components */
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { HTMLAnyELs } from "lawtext/dist/src/renderer/rules/any";
-import htmlCSS from "lawtext/dist/src/renderer/rules/htmlCSS";
-import type * as std from "lawtext/dist/src/law/std";
-import type { PreviewerOptions } from "./optionsInterface";
-import { omit, throttle } from "lawtext/dist/src/util";
-import type { HTMLOptions } from "lawtext/dist/src/renderer/common/html";
-import type { EL } from "lawtext/dist/src/node/el";
-import { loadEL } from "lawtext/dist/src/node/el/loadEL";
-import type { ActionCounter } from "./offset";
-import { getCenterOffset, scrollToOffset } from "./offset";
+import { HTMLAnyELs } from "lawtext/renderer/rules/any";
+import htmlCSS from "lawtext/renderer/rules/htmlCSS";
+import type * as std from "lawtext/law/std/index";
+import type { PreviewerOptions } from "./optionsInterface.ts";
+import { omit, throttle } from "lawtext/util/index";
+import type { HTMLOptions } from "lawtext/renderer/common/html";
+import type { EL } from "lawtext/node/el/index";
+import { loadEL } from "lawtext/node/el/loadEL";
+import type { ActionCounter } from "./offset.ts";
+import { getCenterOffset, scrollToOffset } from "./offset.ts";
 
 
 const vscode = acquireVsCodeApi<WebviewState>();

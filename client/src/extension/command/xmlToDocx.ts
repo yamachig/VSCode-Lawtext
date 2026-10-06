@@ -1,5 +1,5 @@
-import xmlToEL from "lawtext/dist/src/node/el/xmlToEL";
-import renderDocxAsync from "lawtext/dist/src/renderer/docx";
+import xmlToEL from "lawtext/node/el/xmlToEL";
+import renderDocxAsync from "lawtext/renderer/docx";
 
 import * as vscode from "vscode";
 

@@ -1,5 +1,5 @@
-import { parse } from "lawtext/dist/src/parser/lawtext";
-import renderDocxAsync from "lawtext/dist/src/renderer/docx";
+import { parse } from "lawtext/parser/lawtext.js";
+import renderDocxAsync from "lawtext/renderer/docx.js";
 
 import * as vscode from "vscode";
 

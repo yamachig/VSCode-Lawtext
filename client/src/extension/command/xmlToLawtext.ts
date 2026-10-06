@@ -1,5 +1,5 @@
-import xmlToEL from "lawtext/dist/src/node/el/xmlToEL";
-import renderLawtext from "lawtext/dist/src/renderer/lawtext";
+import xmlToEL from "lawtext/node/el/xmlToEL";
+import renderLawtext from "lawtext/renderer/lawtext";
 
 import * as vscode from "vscode";
 

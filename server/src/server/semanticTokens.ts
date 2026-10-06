@@ -2,14 +2,14 @@ import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import { LineType } from "lawtext/dist/src/node/cst/line";
-import { VirtualOnlyLineType } from "lawtext/dist/src/parser/std/virtualLine";
-import { assertNever } from "lawtext/dist/src/util";
-import * as std from "lawtext/dist/src/law/std";
-import type { Parsed } from "./common";
-import { ____Declaration } from "lawtext/dist/src/node/el/controls/declaration";
-import { ____VarRef } from "lawtext/dist/src/node/el/controls/varRef";
-import { __PContent } from "lawtext/dist/src/node/el/controls";
+import { LineType } from "lawtext/node/cst/line";
+import { VirtualOnlyLineType } from "lawtext/parser/std/virtualLine";
+import { assertNever } from "lawtext/util/index";
+import * as std from "lawtext/law/std/index";
+import type { Parsed } from "./common.ts";
+import { ____Declaration } from "lawtext/node/el/controls/declaration";
+import { ____VarRef } from "lawtext/node/el/controls/varRef";
+import { __PContent } from "lawtext/node/el/controls/index";
 
 export const tokenTypes: string[] = [];
 export const tokenModifiers: string[] = [];

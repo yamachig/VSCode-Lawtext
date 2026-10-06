@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { parseLawIDOrLawRevID } from "lawtext/dist/src/law/lawID";
-import { lawNumLikeToLawNum } from "lawtext/dist/src/law/lawNum";
-import { assertNever } from "lawtext/dist/src/util";
+import { parseLawIDOrLawRevID } from "lawtext/law/lawID";
+import { lawNumLikeToLawNum } from "lawtext/law/lawNum";
+import { assertNever } from "lawtext/util/index";
 
 export const openFromElaws = async () => {
     const lawIDOrLawNum = (await vscode.window.showInputBox({ placeHolder: "Enter LawID or LawNum to open XML from e-LAWS" }))?.trim();

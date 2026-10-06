@@ -8,9 +8,9 @@ import type {
     TextDocument
 } from "vscode-languageserver-textdocument";
 
-import type { EL } from "lawtext/dist/src/node/el";
-import * as std from "lawtext/dist/src/law/std";
-import type { Parsed } from "./common";
+import type { EL } from "lawtext/node/el/index";
+import * as std from "lawtext/law/std/index";
+import type { Parsed } from "./common.ts";
 
 export const getHover = (document: TextDocument, parsed: Parsed, position: Position): Hover | null => {
     const offset = document.offsetAt(position);

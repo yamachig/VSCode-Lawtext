@@ -1,5 +1,5 @@
-import { parse } from "lawtext/dist/src/parser/lawtext";
-import renderXML from "lawtext/dist/src/renderer/xml";
+import { parse } from "lawtext/parser/lawtext";
+import renderXML from "lawtext/renderer/xml";
 
 import * as vscode from "vscode";
 

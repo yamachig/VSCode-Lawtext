@@ -24,7 +24,7 @@
         "browser": "npx vscode-test-web --extensionDevelopmentPath=. test-data"
     },
     "dependencies": {
-        "lawtext": "^0.1.52"
+        "lawtext": "^0.2.3"
     },
     "devDependencies": {
         "@eslint-react/eslint-plugin": "^5.8.8",
@@ -43,7 +43,7 @@
         "eslint": "^10.4.1",
         "eslint-plugin-tsdoc": "^0.5.2",
         "globals": "^17.6.0",
-        "path-browserify": "^1.0.1",
+        "pathe": "^2.0.3",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
         "ts-loader": "^9.6.0",
